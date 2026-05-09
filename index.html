@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>国語科 学習指導要領ドリル</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green: #1D9E75;
+  --green-dark: #0F6E56;
+  --green-light: #EAF3DE;
+  --green-border: #639922;
+  --red: #E24B4A;
+  --red-light: #FCEBEB;
+  --red-border: #A32D2D;
+  --amber: #BA7517;
+  --amber-light: #FAEEDA;
+  --bg: #F7F6F2;
+  --surface: #FFFFFF;
+  --surface2: #F1EFE8;
+  --border: rgba(0,0,0,0.1);
+  --border-strong: rgba(0,0,0,0.18);
+  --text: #1a1a18;
+  --text-muted: #5F5E5A;
+  --text-hint: #888780;
+  --radius: 10px;
+  --radius-lg: 14px;
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#1a1a18;
+    --surface:#252523;
+    --surface2:#2e2e2b;
+    --border:rgba(255,255,255,0.1);
+    --border-strong:rgba(255,255,255,0.18);
+    --text:#f0ede6;
+    --text-muted:#B4B2A9;
+    --text-hint:#888780;
+    --green-light:#0d2e1e;
+    --red-light:#2e1212;
+    --amber-light:#2a1f08;
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Noto Sans JP',sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  font-size:15px;
+  line-height:1.7;
+}
+
+/* ─── レイアウト ─── */
+.page{max-width:680px;margin:0 auto;padding:1.5rem 1rem 4rem;}
+
+/* ─── ヘッダー ─── */
+.app-header{margin-bottom:2rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border);}
+.app-title{font-family:'Noto Serif JP',serif;font-size:20px;font-weight:600;letter-spacing:.03em;margin-bottom:.25rem;}
+.app-subtitle{font-size:13px;color:var(--text-muted);}
+
+/* ─── 統計行 ─── */
+.stats-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.25rem;}
+.stat-chip{
+  display:flex;align-items:center;gap:5px;
+  background:var(--surface2);border-radius:20px;
+  padding:4px 12px;font-size:12px;color:var(--text-muted);
+}
+.stat-chip strong{color:var(--text);font-weight:500;}
+.stat-chip.warn{background:var(--amber-light);color:var(--amber);}
+.stat-chip.warn strong{color:var(--amber);}
+
+/* ─── フィルター ─── */
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem;align-items:center;}
+.filter-row select{
+  font-family:'Noto Sans JP',sans-serif;
+  font-size:13px;padding:6px 28px 6px 10px;
+  border:1px solid var(--border-strong);border-radius:var(--radius);
+  background:var(--surface);color:var(--text);cursor:pointer;
+  appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%23888' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 8px center;
+}
+.wrong-toggle{
+  display:flex;align-items:center;gap:6px;
+  font-size:13px;color:var(--text-muted);cursor:pointer;
+  padding:6px 12px;border:1px solid var(--border-strong);
+  border-radius:var(--radius);background:var(--surface);
+  user-select:none;transition:background .15s;
+}
+.wrong-toggle input{accent-color:var(--red);cursor:pointer;}
+.wrong-toggle:has(input:checked){background:var(--red-light);border-color:var(--red-border);color:var(--red-border);}
+
+/* ─── モードタブ ─── */
+.mode-tabs{display:flex;gap:4px;margin-bottom:1.25rem;background:var(--surface2);padding:3px;border-radius:var(--radius);}
+.mode-tab{
+  flex:1;padding:.45rem .5rem;font-size:13px;font-family:'Noto Sans JP',sans-serif;
+  border:none;border-radius:8px;background:transparent;
+  color:var(--text-muted);cursor:pointer;transition:all .18s;
+}
+.mode-tab.active{background:var(--surface);color:var(--text);font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,.1);}
+
+/* ─── プログレスバー ─── */
+.progress-wrap{margin-bottom:1.5rem;}
+.progress-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--text-hint);margin-bottom:5px;}
+.progress-bar{height:5px;background:var(--surface2);border-radius:3px;overflow:hidden;}
+.progress-fill{height:100%;background:var(--green);border-radius:3px;transition:width .35s ease;}
+
+/* ─── カード ─── */
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:1rem;
+}
+
+/* ─── バッジ ─── */
+.badge-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem;}
+.badge{
+  font-size:11px;padding:3px 9px;border-radius:20px;
+  background:var(--surface2);color:var(--text-muted);
+  border:1px solid var(--border);
+}
+.badge.review{background:var(--amber-light);color:var(--amber);border-color:transparent;}
+
+/* ─── 問題文 ─── */
+.q-text{font-size:15px;line-height:1.9;color:var(--text);margin-bottom:1.5rem;}
+.blank-token{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:72px;padding:1px 6px;
+  border-bottom:2px solid var(--green);
+  font-weight:500;color:var(--green-dark);
+  background:var(--green-light);border-radius:4px 4px 0 0;
+}
+.blank-token.revealed{color:var(--green-dark);background:var(--green-light);}
+
+/* ─── 選択肢 ─── */
+.blank-label{font-size:12px;color:var(--text-hint);margin-bottom:6px;margin-top:1rem;}
+.choices-grid{display:flex;flex-direction:column;gap:7px;margin-bottom:.5rem;}
+.choice-btn{
+  text-align:left;padding:.65rem 1rem;
+  border:1px solid var(--border-strong);border-radius:var(--radius);
+  background:var(--surface);color:var(--text);
+  font-size:14px;font-family:'Noto Sans JP',sans-serif;
+  cursor:pointer;transition:background .12s,border-color .12s;
+}
+.choice-btn:hover:not(:disabled){background:var(--surface2);}
+.choice-btn:disabled{cursor:default;}
+.choice-btn.ok{background:var(--green-light);border-color:var(--green-border);color:#3B6D11;}
+.choice-btn.ng{background:var(--red-light);border-color:var(--red-border);color:#7a1f1f;}
+.choice-btn.reveal-ans{background:var(--green-light);border-color:var(--green-border);color:#3B6D11;}
+
+/* ─── 穴埋め入力 ─── */
+.fill-row{display:flex;align-items:center;gap:8px;margin-bottom:.6rem;flex-wrap:wrap;}
+.fill-idx{font-size:13px;color:var(--text-muted);min-width:28px;flex-shrink:0;}
+.fill-input{
+  flex:1;min-width:160px;
+  padding:.5rem .75rem;
+  border:1px solid var(--border-strong);border-radius:var(--radius);
+  background:var(--surface);color:var(--text);
+  font-size:14px;font-family:'Noto Sans JP',sans-serif;
+  transition:border-color .15s,background .15s;
+}
+.fill-input:focus{outline:none;border-color:var(--green);}
+.fill-input:disabled{cursor:default;}
+.fill-input.ok{background:var(--green-light);border-color:var(--green-border);color:#3B6D11;}
+.fill-input.ng{background:var(--red-light);border-color:var(--red-border);color:#7a1f1f;}
+.fill-hint{font-size:12px;color:var(--green-dark);margin-top:2px;padding-left:36px;}
+
+/* ─── フィードバック ─── */
+.feedback{
+  padding:.65rem 1rem;border-radius:var(--radius);
+  font-size:14px;margin-bottom:1.25rem;
+  display:flex;align-items:flex-start;gap:8px;
+}
+.feedback.ok{background:var(--green-light);color:#3B6D11;border:1px solid var(--green-border);}
+.feedback.ng{background:var(--red-light);color:#7a1f1f;border:1px solid var(--red-border);}
+.feedback-icon{font-size:16px;flex-shrink:0;margin-top:2px;}
+
+/* ─── アクション ─── */
+.action-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.btn{
+  padding:.5rem 1.25rem;
+  border:1px solid var(--border-strong);border-radius:var(--radius);
+  background:transparent;color:var(--text);
+  font-size:14px;font-family:'Noto Sans JP',sans-serif;
+  cursor:pointer;transition:background .12s;
+}
+.btn:hover{background:var(--surface2);}
+.btn:active{transform:scale(.98);}
+.btn-primary{background:var(--green);border-color:var(--green);color:#fff;}
+.btn-primary:hover{background:var(--green-dark);border-color:var(--green-dark);}
+.counter{font-size:13px;color:var(--text-hint);margin-left:auto;}
+
+/* ─── 結果画面 ─── */
+.result-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:2.5rem 1.5rem;
+  text-align:center;
+}
+.result-score{font-size:64px;font-weight:700;color:var(--green);line-height:1;font-family:'Noto Serif JP',serif;}
+.result-score span{font-size:28px;}
+.result-label{font-size:14px;color:var(--text-muted);margin:.5rem 0 1.75rem;}
+.result-detail{font-size:13px;color:var(--text-muted);margin-bottom:1.75rem;}
+.result-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+.result-warn{
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:13px;color:var(--amber);
+  background:var(--amber-light);border-radius:var(--radius);
+  padding:.5rem 1rem;margin-bottom:1.5rem;
+}
+
+/* ─── 空状態 ─── */
+.empty{text-align:center;padding:4rem 1rem;color:var(--text-muted);}
+.empty-icon{font-size:36px;margin-bottom:.75rem;opacity:.4;}
+
+/* ─── フッター ─── */
+.app-footer{text-align:center;font-size:11px;color:var(--text-hint);margin-top:2.5rem;}
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="app-header">
+    <h1 class="app-title">国語科 学習指導要領ドリル</h1>
+    <p class="app-subtitle">小学校国語科 教員採用試験対策 — 全50問</p>
+  </header>
+
+  <div class="stats-row" id="statsRow"></div>
+
+  <div class="filter-row">
+    <select id="filterDomain" onchange="onFilter()">
+      <option value="all">すべての領域</option>
+      <option value="目標・総則">目標・総則</option>
+      <option value="知識及び技能">知識及び技能</option>
+      <option value="話すこと・聞くこと">話すこと・聞くこと</option>
+      <option value="書くこと">書くこと</option>
+      <option value="読むこと">読むこと</option>
+      <option value="指導計画・取扱い">指導計画・取扱い</option>
+    </select>
+    <select id="filterGrade" onchange="onFilter()">
+      <option value="all">すべての学年</option>
+      <option value="全学年共通">全学年共通</option>
+      <option value="第1学年・第2学年">第1・2学年</option>
+      <option value="第3学年・第4学年">第3・4学年</option>
+      <option value="第5学年・第6学年">第5・6学年</option>
+    </select>
+    <label class="wrong-toggle">
+      <input type="checkbox" id="wrongOnly" onchange="onFilter()"> 間違えた問題のみ
+    </label>
+  </div>
+
+  <div class="mode-tabs">
+    <button class="mode-tab active" onclick="setMode('choice')">▤ 選択式</button>
+    <button class="mode-tab" onclick="setMode('fill')">✎ 穴埋め式</button>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-meta">
+      <span id="progressLabel">0 / 0</span>
+      <span id="progressPct">0%</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+  </div>
+
+  <div id="mainArea"></div>
+
+  <footer class="app-footer">初等国語科教育法 学習支援ツール</footer>
+</div>
+
+<script>
+const DATA = [{"id":1,"section":"国語科改訂の要点","grade":"全学年共通","domain":"目標・総則","question":"国語科で育成を目指す資質・能力を「国語で正確に理解し適切に表現する資質・能力」と規定するとともに、3つの柱で整理した。その3つとは「【①】」「【②】」「【③】」である。","blanks":["知識及び技能","思考力、判断力、表現力等","学びに向かう力、人間性等"],"choices":[["知識及び技能","表現力及び技能","言語知識と技能"],["思考力、判断力、表現力等","創造力、判断力、表現力等","思考力、応用力、表現力等"],["学びに向かう力、人間性等","主体性、多様性、協働性","生きる力、人間性、社会性"]]},{"id":2,"section":"国語科改訂の要点","grade":"全学年共通","domain":"目標・総則","question":"学年別漢字配当表の【①】学年に、都道府県名に用いる漢字【②】字を配当した。また、これに伴い【③】字の配当学年を移行した。","blanks":["第4","25","32"],"choices":[["第3","第4","第5"],["20","25","30"],["28","30","32"]]},{"id":3,"section":"国語科の目標","grade":"全学年共通","domain":"目標・総則","question":"【①】を働かせ、言語活動を通して、国語で正確に理解し適切に表現する資質・能力を育成することを目指す。","blanks":["言葉による見方・考え方"],"choices":[["言葉による見方・考え方","思考力・判断力・表現力","言語感覚と読解力"]]},{"id":4,"section":"国語科の目標","grade":"全学年共通","domain":"目標・総則","question":"国語科の目標(2)：日常生活における人との関わりの中で【①】を高め、【②】を養う。","blanks":["伝え合う力","思考力や想像力"],"choices":[["伝え合う力","読解力","表現力"],["思考力や想像力","言語感覚","創造力や判断力"]]},{"id":5,"section":"国語科の目標","grade":"全学年共通","domain":"目標・総則","question":"国語科の目標(3)：【①】を認識するとともに、言語感覚を養い、国語の【②】を自覚し、国語を尊重してその【③】を図る態度を養う。","blanks":["言葉がもつよさ","大切さ","能力の向上"],"choices":[["言葉がもつよさ","言語の美しさ","語彙の豊かさ"],["大切さ","重要性","素晴らしさ"],["能力の向上","知識の拡充","技能の向上"]]},{"id":6,"section":"各学年の目標","grade":"全学年共通","domain":"目標・総則","question":"各学年の目標は、教科目標の(1)(2)(3)に対応して、【①】のまとまりごとに示されている。","blanks":["2学年"],"choices":[["1学年","2学年","3学年"]]},{"id":7,"section":"各学年の目標","grade":"第1学年・第2学年","domain":"目標・総則","question":"【第1・2学年】思考力等の目標：順序立てて考える力や感じたり【①】したりする力を養い、日常生活における人との関わりの中で【②】を高め、自分の思いや考えを【③】ことができるようにする。","blanks":["想像","伝え合う力","もつ"],"choices":[["想像","思考","観察"],["伝え合う力","表現する力","読解する力"],["もつ","まとめる","広げる"]]},{"id":8,"section":"各学年の目標","grade":"第3学年・第4学年","domain":"目標・総則","question":"【第3・4学年】思考力等の目標：【①】考える力や豊かに感じたり想像したりする力を養い、日常生活における人との関わりの中で伝え合う力を高め、自分の思いや考えを【②】ことができるようにする。","blanks":["筋道立てて","まとめる"],"choices":[["筋道立てて","順序立てて","論理立てて"],["まとめる","もつ","広げる"]]},{"id":9,"section":"各学年の目標","grade":"第5学年・第6学年","domain":"目標・総則","question":"【第5・6学年】思考力等の目標：筋道立てて考える力や豊かに感じたり想像したりする力を養い、日常生活における人との関わりの中で伝え合う力を高め、自分の思いや考えを【①】ことができるようにする。","blanks":["広げる"],"choices":[["広げる","まとめる","深める"]]},{"id":10,"section":"各学年の目標","grade":"第1学年・第2学年","domain":"目標・総則","question":"【第1・2学年】学びに向かう力の目標：言葉がもつよさを【①】とともに、楽しんで読書をし、国語を大切にして、思いや考えを伝え合おうとする態度を養う。","blanks":["感じる"],"choices":[["感じる","気付く","認識する"]]},{"id":11,"section":"各学年の目標","grade":"第3学年・第4学年","domain":"目標・総則","question":"【第3・4学年】学びに向かう力の目標：言葉がもつよさに【①】とともに、【②】読書をし、国語を大切にして、思いや考えを伝え合おうとする態度を養う。","blanks":["気付く","幅広く"],"choices":[["感じる","気付く","認識する"],["幅広く","進んで","楽しんで"]]},{"id":12,"section":"各学年の目標","grade":"第5学年・第6学年","domain":"目標・総則","question":"【第5・6学年】学びに向かう力の目標：言葉がもつよさを【①】とともに、【②】読書をし、国語の大切さを自覚して、思いや考えを伝え合おうとする態度を養う。","blanks":["認識する","進んで"],"choices":[["感じる","気付く","認識する"],["幅広く","進んで","楽しんで"]]},{"id":13,"section":"知識及び技能／言葉の特徴や使い方","grade":"第1学年・第2学年","domain":"知識及び技能","question":"【第1・2学年】話し言葉：音節と文字との関係、【①】による語の意味の違いなどに気付くとともに、姿や口形、発声や発音に注意して話すこと。","blanks":["アクセント"],"choices":[["アクセント","イントネーション","リズム"]]},{"id":14,"section":"知識及び技能／言葉の特徴や使い方","grade":"第1学年・第2学年","domain":"知識及び技能","question":"【第1・2学年】表記：長音、拗音、促音、【①】などの表記、助詞の「は」「へ」及び「を」の使い方、【②】の打ち方、かぎ（「　」）の使い方を理解して文や文章の中で使うこと。","blanks":["撥音","句読点"],"choices":[["撥音","促音","長音"],["句読点","読点","傍点"]]},{"id":15,"section":"知識及び技能／言葉の特徴や使い方","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】話し言葉：相手を見て話したり聞いたりするとともに、言葉の抑揚や強弱、【①】などに注意して話すこと。","blanks":["間の取り方"],"choices":[["間の取り方","声の大きさ","話す速さ"]]},{"id":16,"section":"知識及び技能／言葉の特徴や使い方","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】ローマ字：第3学年においては、日常使われている簡単な単語について、【①】で表記されたものを読み、文や文章の中で書くこと。","blanks":["ローマ字"],"choices":[["ローマ字","アルファベット","仮名"]]},{"id":17,"section":"知識及び技能／言葉の特徴や使い方","grade":"第1学年・第2学年","domain":"知識及び技能","question":"【第1・2学年】語彙：身近なことを表す語句の量を増し、話や文章の中で使うとともに、言葉には【①】による語句のまとまりがあることに気付き、語彙を豊かにすること。","blanks":["意味"],"choices":[["意味","音韻","性質"]]},{"id":18,"section":"知識及び技能／言葉の特徴や使い方","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】語彙：様子や行動、【①】を表す語句の量を増し、話や文章の中で使うとともに、言葉には性質や役割による語句のまとまりがあることを理解し、語彙を豊かにすること。","blanks":["気持ちや性格"],"choices":[["気持ちや性格","思考や感情","行動や表情"]]},{"id":19,"section":"知識及び技能／言葉の特徴や使い方","grade":"第5学年・第6学年","domain":"知識及び技能","question":"【第5・6学年】語彙：【①】に関わる語句の量を増し、語句と語句との関係、語句の【②】について理解し、語彙を豊かにすること。また、語感や言葉の使い方に対する感覚を意識して語句や語句を使うこと。","blanks":["思考","構成や変化"],"choices":[["思考","感情","表現"],["構成や変化","意味や用法","音韻と形態"]]},{"id":20,"section":"知識及び技能／言葉の特徴や使い方","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】文や文章：【①】と述語との関係、修飾と被修飾との関係、指示する語句と【②】する語句の役割、【③】の役割について理解すること。","blanks":["主語","接続","段落"],"choices":[["主語","述語","修飾語"],["接続","指示","修飾"],["段落","文章","節"]]},{"id":21,"section":"知識及び技能／言葉の特徴や使い方","grade":"第1学年・第2学年","domain":"知識及び技能","question":"【第1・2学年】言葉遣い：丁寧な言葉と普通の言葉との違いに気付けて使うとともに、【①】で書かれた文章に慣れること。","blanks":["敬体"],"choices":[["敬体","常体","文語体"]]},{"id":22,"section":"知識及び技能／言葉の特徴や使い方","grade":"第5学年・第6学年","domain":"知識及び技能","question":"【第5・6学年】言葉遣い：日常よく使われる【①】を理解し使い慣れること。","blanks":["敬語"],"choices":[["敬語","敬体","丁寧語"]]},{"id":23,"section":"知識及び技能／言葉の特徴や使い方","grade":"第5学年・第6学年","domain":"知識及び技能","question":"【第5・6学年】表現の技法：【①】などの表現の工夫に気付くこと。","blanks":["比喩や反復"],"choices":[["比喩や反復","体言止めや倒置","擬音語や擬態語"]]},{"id":24,"section":"知識及び技能／情報の扱い方","grade":"第1学年・第2学年","domain":"知識及び技能","question":"【第1・2学年】情報と情報との関係：【①】、相違、事柄の順序など情報と情報との関係について理解すること。","blanks":["共通"],"choices":[["共通","原因","比較"]]},{"id":25,"section":"知識及び技能／情報の扱い方","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】情報と情報との関係：考えとそれを支える【①】、全体と【②】など情報と情報との関係について理解すること。","blanks":["理由や事例","中心"],"choices":[["理由や事例","根拠や論点","原因と結果"],["中心","要点","結論"]]},{"id":26,"section":"知識及び技能／情報の扱い方","grade":"第5学年・第6学年","domain":"知識及び技能","question":"【第5・6学年】情報と情報との関係：【①】など情報と情報との関係について理解すること。","blanks":["原因と結果"],"choices":[["原因と結果","共通と相違","全体と中心"]]},{"id":27,"section":"知識及び技能／情報の扱い方","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】情報の整理：比較や分類の仕方、必要な語句などの書き留め方、【①】の仕方や出典の示し方、【②】や事典の使い方を理解し使うこと。","blanks":["引用","辞書"],"choices":[["引用","要約","転用"],["辞書","図鑑","事典"]]},{"id":28,"section":"知識及び技能／言語文化","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】伝統的な言語文化：易しい文語調の短歌や俳句を音読したり暗唱したりするなどして、言葉の【①】に親しむこと。","blanks":["響きやリズム"],"choices":[["響きやリズム","意味と用法","歴史と文化"]]},{"id":29,"section":"知識及び技能／言語文化","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】慣用表現：長い間使われてきた【①】などの意味を知り、使うこと。","blanks":["ことわざや慣用句、故事成語"],"choices":[["ことわざや慣用句、故事成語","和歌や俳句、連歌","神話や伝説、民話"]]},{"id":30,"section":"知識及び技能／言語文化","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】漢字の構成：漢字が、【①】などから構成されていることについて理解すること。","blanks":["へんやつくり"],"choices":[["へんやつくり","音読みと訓読み","画数と筆順"]]},{"id":31,"section":"知識及び技能／言語文化","grade":"第5学年・第6学年","domain":"知識及び技能","question":"【第5・6学年】言葉の由来や変化：語句の由来などに関心をもつとともに、時間の経過による言葉の変化や世代による言葉の違いに気付き、【①】との違いを理解すること。","blanks":["共通語と方言"],"choices":[["共通語と方言","書き言葉と話し言葉","古語と現代語"]]},{"id":32,"section":"知識及び技能／言語文化","grade":"第3学年以上","domain":"知識及び技能","question":"書写：毛筆を使用する書写の指導は【①】以上の各学年で行い、各学年年間【②】単位時間程度を配当する。","blanks":["第3学年","30"],"choices":[["第1学年","第2学年","第3学年"],["20","25","30"]]},{"id":33,"section":"思考力・判断力・表現力等／話すこと・聞くこと","grade":"第1学年・第2学年","domain":"話すこと・聞くこと","question":"【第1・2学年】構成の検討：相手に伝わるように、行動したことや経験したことに基づいて、話す事柄の【①】を考えること。","blanks":["順序"],"choices":[["順序","構成","中心"]]},{"id":34,"section":"思考力・判断力・表現力等／話すこと・聞くこと","grade":"第3学年・第4学年","domain":"話すこと・聞くこと","question":"【第3・4学年】構成の検討：相手に伝わるように、理由や事例などを挙げながら、話の【①】が明確になるよう【②】を考えること。","blanks":["中心","話の構成"],"choices":[["中心","要点","順序"],["話の構成","話の展開","話の順序"]]},{"id":35,"section":"思考力・判断力・表現力等／話すこと・聞くこと","grade":"第1学年・第2学年","domain":"話すこと・聞くこと","question":"【第1・2学年】表現：伝えたい事柄や相手に応じて、【①】などを工夫すること。","blanks":["声の大きさや速さ"],"choices":[["声の大きさや速さ","言葉の抑揚や強弱","資料の活用"]]},{"id":36,"section":"思考力・判断力・表現力等／話すこと・聞くこと","grade":"第3学年・第4学年","domain":"話すこと・聞くこと","question":"【第3・4学年】表現：話の中心や話す場面を意識して、【①】などを工夫すること。","blanks":["言葉の抑揚や強弱、間の取り方"],"choices":[["言葉の抑揚や強弱、間の取り方","声の大きさや速さ","資料の活用や表現の工夫"]]},{"id":37,"section":"思考力・判断力・表現力等／話すこと・聞くこと","grade":"第3学年・第4学年","domain":"話すこと・聞くこと","question":"【第3・4学年】話合いの進め方：目的や進め方を確認し、【①】などの役割を果たしながら話し合い、互いの意見の【②】に着目して、考えをまとめること。","blanks":["司会","共通点や相違点"],"choices":[["司会","記録係","発表者"],["共通点や相違点","長所と短所","原因と結果"]]},{"id":38,"section":"思考力・判断力・表現力等／話すこと・聞くこと","grade":"第5学年・第6学年","domain":"話すこと・聞くこと","question":"【第5・6学年】話合いの進め方：互いの【①】を明確にしながら【②】に話し合い、考えを広げたりまとめたりすること。","blanks":["立場や意図","計画的"],"choices":[["立場や意図","共通点や相違点","意見と理由"],["計画的","積極的","協力的"]]},{"id":39,"section":"思考力・判断力・表現力等／書くこと","grade":"第3学年・第4学年","domain":"書くこと","question":"【第3・4学年】構成の検討：書く内容の中心を明確にし、内容のまとまりで【①】をつくったり、段落相互の関係に注意したりして、文章の構成を考えること。","blanks":["段落"],"choices":[["段落","章","節"]]},{"id":40,"section":"思考力・判断力・表現力等／書くこと","grade":"第5学年・第6学年","domain":"書くこと","question":"【第5・6学年】構成の検討：【①】文章となるように、文章全体の構成や展開を考えること。","blanks":["筋道の通った"],"choices":[["筋道の通った","段落が明確な","事実と意見が区別された"]]},{"id":41,"section":"思考力・判断力・表現力等／書くこと","grade":"第3学年・第4学年","domain":"書くこと","question":"【第3・4学年】考えの形成・記述：自分の考えとそれを支える【①】との関係を明確にして、書き表し方を工夫すること。","blanks":["理由や事例"],"choices":[["理由や事例","感想や意見","図表やグラフ"]]},{"id":42,"section":"思考力・判断力・表現力等／書くこと","grade":"第5学年・第6学年","domain":"書くこと","question":"【第5・6学年】考えの形成・記述：引用したり、【①】などを用いたりして、自分の考えが伝わるように書き表し方を工夫すること。","blanks":["図表やグラフ"],"choices":[["図表やグラフ","写真や絵","事例や体験"]]},{"id":43,"section":"思考力・判断力・表現力等／読むこと","grade":"第3学年・第4学年","domain":"読むこと","question":"【第3・4学年】構造と内容の把握（説明的な文章）：【①】の関係に着目しながら、考えとそれを支える理由や事例との関係などについて、叙述を基に捉えること。","blanks":["段落相互"],"choices":[["段落相互","文と文","語句と語句"]]},{"id":44,"section":"思考力・判断力・表現力等／読むこと","grade":"第5学年・第6学年","domain":"読むこと","question":"【第5・6学年】構造と内容の把握（説明的な文章）：事実と感想、意見などの関係を叙述を基に押さえ、文章全体の構成を捉えて【①】すること。","blanks":["要旨を把握"],"choices":[["要旨を把握","内容を要約","主題を理解"]]},{"id":45,"section":"思考力・判断力・表現力等／読むこと","grade":"第3学年・第4学年","domain":"読むこと","question":"【第3・4学年】精査・解釈（文学的な文章）：登場人物の【①】や性格、情景について、場面の移り変わりと結び付けて具体的に想像すること。","blanks":["気持ちの変化"],"choices":[["気持ちの変化","相互関係","行動や言葉"]]},{"id":46,"section":"思考力・判断力・表現力等／読むこと","grade":"第5学年・第6学年","domain":"読むこと","question":"【第5・6学年】精査・解釈（説明的な文章）：目的に応じて、文章と図表などを結び付けるなどして必要な情報を見付けたり、【①】について考えたりすること。","blanks":["論の進め方"],"choices":[["論の進め方","文章の構成","筆者の意図"]]},{"id":47,"section":"指導計画の作成と内容の取扱い","grade":"全学年共通","domain":"指導計画・取扱い","question":"「A 話すこと・聞くこと」の年間配当時間：第1・2学年では年間【①】単位時間程度、第3・4学年では年間【②】単位時間程度、第5・6学年では年間【③】単位時間程度。","blanks":["35","30","25"],"choices":[["25","30","35"],["25","30","35"],["25","30","35"]]},{"id":48,"section":"指導計画の作成と内容の取扱い","grade":"全学年共通","domain":"指導計画・取扱い","question":"「B 書くこと」の年間配当時間：第1・2学年では年間【①】単位時間程度、第3・4学年では年間【②】単位時間程度、第5・6学年では年間【③】単位時間程度。","blanks":["100","85","55"],"choices":[["85","100","120"],["70","85","100"],["45","55","70"]]},{"id":49,"section":"指導計画の作成と内容の取扱い","grade":"全学年共通","domain":"指導計画・取扱い","question":"学校図書館の3機能：【①】（読書活動・読書指導の場）、【②】（学習活動を支援し理解を深める）、【③】（情報ニーズへの対応・情報活用能力の育成）。","blanks":["読書センター","学習センター","情報センター"],"choices":[["読書センター","図書センター","文化センター"],["学習センター","教育センター","研究センター"],["情報センター","調査センター","資料センター"]]},{"id":50,"section":"指導計画の作成と内容の取扱い","grade":"全学年共通","domain":"指導計画・取扱い","question":"「C 読むこと」に関する指導については、【①】を高め、日常生活において読書活動を活発に行うようにするとともに、他教科等の学習における読書の指導や【②】における指導との関連を考えて行うこと。","blanks":["読書意欲","学校図書館"],"choices":[["読書意欲","読書習慣","言語感覚"],["学校図書館","公共図書館","家庭"]]}];
+
+let mode='choice', filterDomain='all', filterGrade='all', wrongOnly=false;
+let wrongIds=new Set(), answeredIds=new Set(), correctIds=new Set();
+let queue=[], current=0, answered=false, blankStates=[];
+
+function getFiltered(){
+  return DATA.filter(q=>{
+    if(filterDomain!=='all'&&q.domain!==filterDomain) return false;
+    if(filterGrade!=='all'&&q.grade!==filterGrade) return false;
+    if(wrongOnly&&!wrongIds.has(q.id)) return false;
+    return true;
+  });
+}
+
+function buildQueue(){
+  queue=[...getFiltered()].sort(()=>Math.random()-.5);
+  current=0; answered=false; blankStates=[];
+}
+
+function setMode(m){
+  mode=m;
+  document.querySelectorAll('.mode-tab').forEach((t,i)=>{
+    t.classList.toggle('active',['choice','fill'][i]===m);
+  });
+  buildQueue(); render();
+}
+
+function onFilter(){
+  filterDomain=document.getElementById('filterDomain').value;
+  filterGrade=document.getElementById('filterGrade').value;
+  wrongOnly=document.getElementById('wrongOnly').checked;
+  buildQueue(); render();
+}
+
+function updateStats(){
+  const el=document.getElementById('statsRow');
+  const wn=wrongIds.size;
+  el.innerHTML=`
+    <div class="stat-chip">正解 <strong>${correctIds.size}</strong></div>
+    <div class="stat-chip">不正解 <strong>${wrongIds.size}</strong></div>
+    <div class="stat-chip">全問 <strong>${DATA.length}</strong></div>
+    ${wn>0?`<div class="stat-chip warn">要復習 <strong>${wn}</strong>問</div>`:''}
+  `;
+}
+
+function updateProgress(){
+  const total=queue.length;
+  const pct=total?Math.round((current/total)*100):0;
+  document.getElementById('progressFill').style.width=pct+'%';
+  document.getElementById('progressLabel').textContent=`${current} / ${total}`;
+  document.getElementById('progressPct').textContent=pct+'%';
+}
+
+function renderQText(q, blanks, revealed){
+  let t=q.question;
+  q.blanks.forEach((ans,i)=>{
+    const ph=`【${'①②③'[i]}】`;
+    if(revealed){
+      t=t.replace(ph,`<span class="blank-token revealed">${ans}</span>`);
+    } else {
+      t=t.replace(ph,`<span class="blank-token">&nbsp;${'①②③'[i]}&nbsp;</span>`);
+    }
+  });
+  return t;
+}
+
+function renderQ(){
+  updateProgress();
+  if(!queue.length){
+    document.getElementById('mainArea').innerHTML=`<div class="empty"><div class="empty-icon">📭</div><p>条件に合う問題がありません。<br>フィルターを変更してください。</p></div>`;
+    return;
+  }
+  if(current>=queue.length){ renderResult(); return; }
+
+  const q=queue[current];
+  answered=false;
+  blankStates=q.blanks.map(()=>null);
+  const isWrong=wrongIds.has(q.id);
+
+  let body=`<div class="card">
+    <div class="badge-row">
+      <span class="badge">${q.section}</span>
+      <span class="badge">${q.grade}</span>
+      ${isWrong?'<span class="badge review">要復習</span>':''}
+    </div>
+    <div class="q-text" id="qtext">${renderQText(q,blankStates,false)}</div>`;
+
+  if(mode==='choice'){
+    q.blanks.forEach((ans,bi)=>{
+      const shuffled=[...q.choices[bi]].sort(()=>Math.random()-.5);
+      if(q.blanks.length>1) body+=`<div class="blank-label">空欄【${'①②③'[bi]}】を選んでください</div>`;
+      body+=`<div class="choices-grid" id="cg${bi}">`;
+      shuffled.forEach(c=>{
+        body+=`<button class="choice-btn" onclick="pickChoice(${bi},'${c.replace(/'/g,"\\'")}')" data-val="${c.replace(/"/g,'&quot;')}">${c}</button>`;
+      });
+      body+=`</div>`;
+    });
+  } else {
+    q.blanks.forEach((ans,bi)=>{
+      body+=`<div class="fill-row">
+        ${q.blanks.length>1?`<span class="fill-idx">【${'①②③'[bi]}】</span>`:''}
+        <input class="fill-input" id="fi${bi}" type="text" placeholder="答えを入力してください"
+          onkeydown="fillKey(event,${bi},${q.blanks.length})">
+      </div>`;
+    });
+  }
+
+  body+=`<div id="fbArea"></div>
+    <div class="action-row">
+      ${mode==='fill'?`<button class="btn btn-primary" id="checkBtn" onclick="checkFill()">確認する</button>`:''}
+      <button class="btn" id="nextBtn" onclick="nextQ()">${current===0&&!answered?'スキップ →':'スキップ →'}</button>
+      <span class="counter">${current+1} / ${queue.length}</span>
+    </div>
+  </div>`;
+
+  document.getElementById('mainArea').innerHTML=body;
+  if(mode==='fill'){
+    setTimeout(()=>{ const f=document.getElementById('fi0'); if(f) f.focus(); },30);
+  }
+}
+
+function pickChoice(bi, val){
+  if(answered&&blankStates[bi]!==null) return;
+  const q=queue[current];
+  const ok=(val===q.blanks[bi]);
+  blankStates[bi]=ok;
+  const grid=document.getElementById('cg'+bi);
+  grid.querySelectorAll('.choice-btn').forEach(b=>{
+    b.disabled=true;
+    if(b.dataset.val===q.blanks[bi]) b.classList.add('reveal-ans');
+    if(b.dataset.val===val && !ok) b.classList.add('ng');
+    if(b.dataset.val===val && ok) b.classList.add('ok');
+  });
+  if(blankStates.every(s=>s!==null)){
+    finalize();
+  }
+}
+
+function fillKey(e,idx,total){
+  if(e.key==='Enter'){
+    if(idx<total-1){ const n=document.getElementById('fi'+(idx+1)); if(n) n.focus(); }
+    else checkFill();
+  }
+}
+
+function checkFill(){
+  if(answered) return;
+  const q=queue[current];
+  let allOk=true;
+  q.blanks.forEach((ans,i)=>{
+    const inp=document.getElementById('fi'+i);
+    if(!inp) return;
+    const ok=(inp.value.trim()===ans);
+    blankStates[i]=ok;
+    inp.disabled=true;
+    inp.classList.add(ok?'ok':'ng');
+    if(!ok){
+      allOk=false;
+      const hint=document.createElement('div');
+      hint.className='fill-hint';
+      hint.textContent='正解: '+ans;
+      inp.parentNode.after(hint);
+    }
+  });
+  const cb=document.getElementById('checkBtn');
+  if(cb) cb.style.display='none';
+  finalize();
+}
+
+function finalize(){
+  answered=true;
+  const q=queue[current];
+  const allOk=blankStates.every(s=>s===true);
+  answeredIds.add(q.id);
+  if(allOk){ correctIds.add(q.id); wrongIds.delete(q.id); }
+  else { wrongIds.add(q.id); correctIds.delete(q.id); }
+
+  const fb=document.getElementById('fbArea');
+  if(allOk){
+    fb.innerHTML=`<div class="feedback ok"><span class="feedback-icon">✓</span><span>正解！</span></div>`;
+  } else {
+    const ans=q.blanks.join('　/　');
+    fb.innerHTML=`<div class="feedback ng"><span class="feedback-icon">✗</span><span>不正解。正解：${ans}</span></div>`;
+  }
+  const nb=document.getElementById('nextBtn');
+  if(nb) nb.textContent='次の問題 →';
+  updateStats();
+}
+
+function nextQ(){
+  current++;
+  renderQ();
+}
+
+function renderResult(){
+  updateProgress();
+  const total=queue.length;
+  const corr=queue.filter(q=>correctIds.has(q.id)).length;
+  const pct=Math.round((corr/total)*100);
+  const wr=wrongIds.size;
+  document.getElementById('mainArea').innerHTML=`
+    <div class="result-card">
+      <p style="font-size:13px;color:var(--text-muted);margin-bottom:.75rem">セッション完了</p>
+      <div class="result-score">${pct}<span>%</span></div>
+      <div class="result-label">${total}問中 ${corr}問正解</div>
+      ${wr>0
+        ?`<div class="result-warn">要復習の問題が <strong>${wr}問</strong> あります</div>`
+        :`<p style="font-size:14px;color:var(--green-dark);margin-bottom:1.5rem">全問クリア！</p>`
+      }
+      <div class="result-actions">
+        ${wr>0?`<button class="btn btn-primary" onclick="retryWrong()">間違えた問題を復習</button>`:''}
+        <button class="btn" onclick="retryAll()">もう一度（全問）</button>
+      </div>
+    </div>`;
+}
+
+function retryWrong(){
+  document.getElementById('wrongOnly').checked=true;
+  wrongOnly=true; buildQueue(); render();
+}
+function retryAll(){
+  document.getElementById('wrongOnly').checked=false;
+  wrongOnly=false; buildQueue(); render();
+}
+
+function render(){ updateStats(); renderQ(); }
+
+buildQueue(); render();
+</script>
+</body>
+</html>
