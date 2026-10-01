@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#1D9E75">
 <title>国語科 学習指導要領ドリル</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@600&display=swap" rel="stylesheet">
@@ -12,11 +13,17 @@
   --green-dark: #0F6E56;
   --green-light: #EAF3DE;
   --green-border: #639922;
+  --ok-text: #3B6D11;
   --red: #E24B4A;
   --red-light: #FCEBEB;
   --red-border: #A32D2D;
+  --ng-text: #7a1f1f;
   --amber: #BA7517;
   --amber-light: #FAEEDA;
+  --blue: #2F6FB3;
+  --blue-light: #E6EFF9;
+  --purple: #7A4FB5;
+  --purple-light: #F0E9F9;
   --bg: #F7F6F2;
   --surface: #FFFFFF;
   --surface2: #F1EFE8;
@@ -25,478 +32,887 @@
   --text: #1a1a18;
   --text-muted: #5F5E5A;
   --text-hint: #888780;
+  --heat0: #EBE9E2; --heat1: #C5E3D2; --heat2: #8ACBA9; --heat3: #43AD80; --heat4: #0F6E56;
   --radius: 10px;
   --radius-lg: 14px;
 }
 @media(prefers-color-scheme:dark){
   :root{
-    --bg:#1a1a18;
-    --surface:#252523;
-    --surface2:#2e2e2b;
-    --border:rgba(255,255,255,0.1);
-    --border-strong:rgba(255,255,255,0.18);
-    --text:#f0ede6;
-    --text-muted:#B4B2A9;
-    --text-hint:#888780;
-    --green-light:#0d2e1e;
-    --red-light:#2e1212;
-    --amber-light:#2a1f08;
+    --bg:#1a1a18; --surface:#252523; --surface2:#2e2e2b;
+    --border:rgba(255,255,255,0.1); --border-strong:rgba(255,255,255,0.18);
+    --text:#f0ede6; --text-muted:#B4B2A9; --text-hint:#888780;
+    --green-light:#0d2e1e; --red-light:#2e1212; --amber-light:#2a1f08;
+    --blue-light:#13243a; --purple-light:#24183a;
+    --ok-text:#9fd67a; --ng-text:#f0a0a0; --green-dark:#5fd0a6; --blue:#7fb2ea; --purple:#b99ae6;
+    --heat0:#2e2e2b; --heat1:#164a35; --heat2:#1f6e50; --heat3:#2a9a6e; --heat4:#4fd29d;
   }
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family:'Noto Sans JP',sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  min-height:100vh;
-  font-size:15px;
-  line-height:1.7;
-}
-
-/* ─── レイアウト ─── */
-.page{max-width:680px;margin:0 auto;padding:1.5rem 1rem 4rem;}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.7;}
+button{font-family:inherit}
+.page{max-width:720px;margin:0 auto;padding:1.25rem 1rem 4rem;}
+.hidden{display:none !important}
 
 /* ─── ヘッダー ─── */
-.app-header{margin-bottom:2rem;padding-bottom:1.25rem;border-bottom:1px solid var(--border);}
-.app-title{font-family:'Noto Serif JP',serif;font-size:20px;font-weight:600;letter-spacing:.03em;margin-bottom:.25rem;}
-.app-subtitle{font-size:13px;color:var(--text-muted);}
+.app-header{display:flex;align-items:center;gap:12px;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border);}
+.app-title{font-family:'Noto Serif JP',serif;font-size:19px;font-weight:600;letter-spacing:.03em;line-height:1.3}
+.app-subtitle{font-size:12px;color:var(--text-muted);}
+.user-chip{margin-left:auto;display:flex;align-items:center;gap:8px;padding:5px 10px 5px 6px;border:1px solid var(--border-strong);border-radius:24px;background:var(--surface);cursor:pointer;color:var(--text);font-size:13px;max-width:55%;}
+.user-chip .av{font-size:20px;line-height:1}
+.user-chip .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:9em}
+.user-chip .lv{font-size:11px;color:var(--green-dark);font-weight:700}
 
-/* ─── 統計行 ─── */
-.stats-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.25rem;}
-.stat-chip{
-  display:flex;align-items:center;gap:5px;
-  background:var(--surface2);border-radius:20px;
-  padding:4px 12px;font-size:12px;color:var(--text-muted);
-}
-.stat-chip strong{color:var(--text);font-weight:500;}
-.stat-chip.warn{background:var(--amber-light);color:var(--amber);}
-.stat-chip.warn strong{color:var(--amber);}
+/* ─── ステータスバー ─── */
+.hud{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;margin-bottom:1rem;}
+.xpbox{min-width:0}
+.xp-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);margin-bottom:3px;gap:8px}
+.xp-meta b{color:var(--text);font-weight:500}
+.bar{height:7px;background:var(--surface2);border-radius:4px;overflow:hidden;}
+.bar-fill{height:100%;background:linear-gradient(90deg,var(--green),#4fc79c);border-radius:4px;transition:width .5s ease;}
+.hud-pill{display:flex;align-items:center;gap:4px;font-size:13px;background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:4px 10px;white-space:nowrap}
+.hud-pill.off{opacity:.55}
+.ring{width:34px;height:34px;flex-shrink:0}
 
-/* ─── フィルター ─── */
-.filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1rem;align-items:center;}
-.filter-row select{
-  font-family:'Noto Sans JP',sans-serif;
-  font-size:13px;padding:6px 28px 6px 10px;
-  border:1px solid var(--border-strong);border-radius:var(--radius);
-  background:var(--surface);color:var(--text);cursor:pointer;
-  appearance:none;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%23888' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 8px center;
-}
-.wrong-toggle{
-  display:flex;align-items:center;gap:6px;
-  font-size:13px;color:var(--text-muted);cursor:pointer;
-  padding:6px 12px;border:1px solid var(--border-strong);
-  border-radius:var(--radius);background:var(--surface);
-  user-select:none;transition:background .15s;
-}
-.wrong-toggle input{accent-color:var(--red);cursor:pointer;}
-.wrong-toggle:has(input:checked){background:var(--red-light);border-color:var(--red-border);color:var(--red-border);}
+/* ─── ナビ ─── */
+.nav{display:flex;gap:4px;margin-bottom:1.25rem;background:var(--surface2);padding:3px;border-radius:var(--radius);}
+.nav button{flex:1;padding:.45rem .25rem;font-size:13px;border:none;border-radius:8px;background:transparent;color:var(--text-muted);cursor:pointer;transition:all .18s;}
+.nav button.active{background:var(--surface);color:var(--text);font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,.1);}
 
-/* ─── モードタブ ─── */
-.mode-tabs{display:flex;gap:4px;margin-bottom:1.25rem;background:var(--surface2);padding:3px;border-radius:var(--radius);}
-.mode-tab{
-  flex:1;padding:.45rem .5rem;font-size:13px;font-family:'Noto Sans JP',sans-serif;
-  border:none;border-radius:8px;background:transparent;
-  color:var(--text-muted);cursor:pointer;transition:all .18s;
-}
-.mode-tab.active{background:var(--surface);color:var(--text);font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,.1);}
-
-/* ─── プログレスバー ─── */
-.progress-wrap{margin-bottom:1.5rem;}
-.progress-meta{display:flex;justify-content:space-between;font-size:12px;color:var(--text-hint);margin-bottom:5px;}
-.progress-bar{height:5px;background:var(--surface2);border-radius:3px;overflow:hidden;}
-.progress-fill{height:100%;background:var(--green);border-radius:3px;transition:width .35s ease;}
-
-/* ─── カード ─── */
-.card{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--radius-lg);padding:1.5rem;margin-bottom:1rem;
-}
-
-/* ─── バッジ ─── */
-.badge-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem;}
-.badge{
-  font-size:11px;padding:3px 9px;border-radius:20px;
-  background:var(--surface2);color:var(--text-muted);
-  border:1px solid var(--border);
-}
-.badge.review{background:var(--amber-light);color:var(--amber);border-color:transparent;}
-
-/* ─── 問題文 ─── */
-.q-text{font-size:15px;line-height:1.9;color:var(--text);margin-bottom:1.5rem;}
-.blank-token{
-  display:inline-flex;align-items:center;justify-content:center;
-  min-width:72px;padding:1px 6px;
-  border-bottom:2px solid var(--green);
-  font-weight:500;color:var(--green-dark);
-  background:var(--green-light);border-radius:4px 4px 0 0;
-}
-.blank-token.revealed{color:var(--green-dark);background:var(--green-light);}
-
-/* ─── 選択肢 ─── */
-.blank-label{font-size:12px;color:var(--text-hint);margin-bottom:6px;margin-top:1rem;}
-.choices-grid{display:flex;flex-direction:column;gap:7px;margin-bottom:.5rem;}
-.choice-btn{
-  text-align:left;padding:.65rem 1rem;
-  border:1px solid var(--border-strong);border-radius:var(--radius);
-  background:var(--surface);color:var(--text);
-  font-size:14px;font-family:'Noto Sans JP',sans-serif;
-  cursor:pointer;transition:background .12s,border-color .12s;
-}
-.choice-btn:hover:not(:disabled){background:var(--surface2);}
-.choice-btn:disabled{cursor:default;}
-.choice-btn.ok{background:var(--green-light);border-color:var(--green-border);color:#3B6D11;}
-.choice-btn.ng{background:var(--red-light);border-color:var(--red-border);color:#7a1f1f;}
-.choice-btn.reveal-ans{background:var(--green-light);border-color:var(--green-border);color:#3B6D11;}
-
-/* ─── 穴埋め入力 ─── */
-.fill-row{display:flex;align-items:center;gap:8px;margin-bottom:.6rem;flex-wrap:wrap;}
-.fill-idx{font-size:13px;color:var(--text-muted);min-width:28px;flex-shrink:0;}
-.fill-input{
-  flex:1;min-width:160px;
-  padding:.5rem .75rem;
-  border:1px solid var(--border-strong);border-radius:var(--radius);
-  background:var(--surface);color:var(--text);
-  font-size:14px;font-family:'Noto Sans JP',sans-serif;
-  transition:border-color .15s,background .15s;
-}
-.fill-input:focus{outline:none;border-color:var(--green);}
-.fill-input:disabled{cursor:default;}
-.fill-input.ok{background:var(--green-light);border-color:var(--green-border);color:#3B6D11;}
-.fill-input.ng{background:var(--red-light);border-color:var(--red-border);color:#7a1f1f;}
-.fill-hint{font-size:12px;color:var(--green-dark);margin-top:2px;padding-left:36px;}
-
-/* ─── フィードバック ─── */
-.feedback{
-  padding:.65rem 1rem;border-radius:var(--radius);
-  font-size:14px;margin-bottom:1.25rem;
-  display:flex;align-items:flex-start;gap:8px;
-}
-.feedback.ok{background:var(--green-light);color:#3B6D11;border:1px solid var(--green-border);}
-.feedback.ng{background:var(--red-light);color:#7a1f1f;border:1px solid var(--red-border);}
-.feedback-icon{font-size:16px;flex-shrink:0;margin-top:2px;}
-
-/* ─── アクション ─── */
-.action-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
-.btn{
-  padding:.5rem 1.25rem;
-  border:1px solid var(--border-strong);border-radius:var(--radius);
-  background:transparent;color:var(--text);
-  font-size:14px;font-family:'Noto Sans JP',sans-serif;
-  cursor:pointer;transition:background .12s;
-}
+/* ─── 汎用 ─── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem 1.25rem;margin-bottom:1rem;}
+.card h2{font-size:15px;font-weight:700;margin-bottom:.75rem;display:flex;align-items:center;gap:6px}
+.card h2 .sub{font-size:12px;font-weight:400;color:var(--text-hint);margin-left:auto}
+.muted{color:var(--text-muted);font-size:13px}
+.hint{color:var(--text-hint);font-size:12px}
+.btn{padding:.5rem 1.1rem;border:1px solid var(--border-strong);border-radius:var(--radius);background:var(--surface);color:var(--text);font-size:14px;cursor:pointer;transition:background .12s;}
 .btn:hover{background:var(--surface2);}
 .btn:active{transform:scale(.98);}
+.btn:disabled{opacity:.45;cursor:default;transform:none}
 .btn-primary{background:var(--green);border-color:var(--green);color:#fff;}
 .btn-primary:hover{background:var(--green-dark);border-color:var(--green-dark);}
+.btn-danger{color:var(--red-border);border-color:var(--red-border)}
+.btn-sm{padding:.3rem .7rem;font-size:12px}
+.btn-link{background:none;border:none;color:var(--text-muted);text-decoration:underline;font-size:12px;cursor:pointer;padding:0}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.spacer{margin-left:auto}
+select,input[type=text],input[type=number],textarea{font-family:inherit;font-size:14px;padding:6px 10px;border:1px solid var(--border-strong);border-radius:var(--radius);background:var(--surface);color:var(--text);}
+select{padding-right:28px;appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24'%3E%3Cpath fill='%23888' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--green)}
+.pill{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;background:var(--surface2);color:var(--text-muted);border:1px solid var(--border);white-space:nowrap}
+.pill.new{}
+.pill.learning{background:var(--amber-light);color:var(--amber);border-color:transparent}
+.pill.solid{background:var(--blue-light);color:var(--blue);border-color:transparent}
+.pill.master{background:var(--green-light);color:var(--green-dark);border-color:transparent}
+.pill.review{background:var(--red-light);color:var(--red-border);border-color:transparent}
+
+/* ─── ホーム：プラン ─── */
+.plans{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.plan{text-align:left;padding:.9rem 1rem;border:1px solid var(--border);border-radius:var(--radius-lg);background:var(--surface);cursor:pointer;color:var(--text);transition:border-color .15s,transform .1s;display:flex;flex-direction:column;gap:2px;min-height:96px}
+.plan:hover:not(:disabled){border-color:var(--green)}
+.plan:active:not(:disabled){transform:scale(.99)}
+.plan:disabled{opacity:.5;cursor:default}
+.plan .ic{font-size:22px;line-height:1.2}
+.plan .t{font-weight:700;font-size:14px}
+.plan .d{font-size:12px;color:var(--text-muted);line-height:1.5}
+.plan.hero{grid-column:1/-1;background:linear-gradient(135deg,var(--green-light),var(--surface));border-color:var(--green-border)}
+.plan .cnt{font-size:12px;font-weight:700;color:var(--green-dark)}
+.format-switch{display:flex;gap:4px;background:var(--surface2);padding:3px;border-radius:var(--radius);margin-bottom:.9rem}
+.format-switch button{flex:1;padding:.4rem;border:none;background:transparent;border-radius:8px;font-size:13px;color:var(--text-muted);cursor:pointer}
+.format-switch button.active{background:var(--surface);color:var(--text);font-weight:500;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin:.5rem 0 .75rem}
+.filters select{font-size:13px}
+
+/* ─── 習熟度バー ─── */
+.mastery{display:flex;height:10px;border-radius:5px;overflow:hidden;background:var(--surface2)}
+.mastery span{display:block;height:100%}
+.m-new{background:var(--heat0)} .m-learning{background:#E0A548} .m-solid{background:#5B93D1} .m-master{background:var(--green)}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--text-muted);margin-top:6px}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+.domain-row{display:grid;grid-template-columns:8.5em 1fr 3.2em;gap:8px;align-items:center;font-size:12px;margin-bottom:8px}
+.domain-row .pct{text-align:right;color:var(--text-muted)}
+
+/* ─── 問題 ─── */
+.session-top{display:flex;align-items:center;gap:10px;margin-bottom:.6rem;font-size:12px;color:var(--text-muted)}
+.combo{font-weight:700;color:var(--amber);transition:transform .2s}
+.combo.pop{transform:scale(1.35)}
+.timer{font-variant-numeric:tabular-nums}
+.badge-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem;}
+.q-text{font-size:15.5px;line-height:1.95;margin-bottom:1.25rem;}
+.blank-token{display:inline-flex;align-items:center;justify-content:center;min-width:72px;padding:1px 6px;border-bottom:2px solid var(--green);font-weight:500;color:var(--green-dark);background:var(--green-light);border-radius:4px 4px 0 0;}
+.blank-token.ok{border-color:var(--green-border)}
+.blank-token.ng{border-color:var(--red-border);background:var(--red-light);color:var(--ng-text)}
+.blank-label{font-size:12px;color:var(--text-hint);margin-bottom:6px;margin-top:.9rem;}
+.choices-grid{display:flex;flex-direction:column;gap:7px;margin-bottom:.5rem;}
+.choice-btn{display:flex;gap:10px;align-items:center;text-align:left;padding:.65rem 1rem;border:1px solid var(--border-strong);border-radius:var(--radius);background:var(--surface);color:var(--text);font-size:14px;cursor:pointer;transition:background .12s,border-color .12s;}
+.choice-btn .key{font-size:11px;color:var(--text-hint);border:1px solid var(--border-strong);border-radius:4px;padding:0 5px;flex-shrink:0}
+.choice-btn:hover:not(:disabled){background:var(--surface2);}
+.choice-btn:disabled{cursor:default;}
+.choice-btn.picked{border-color:var(--blue);background:var(--blue-light)}
+.choice-btn.ok,.choice-btn.reveal-ans{background:var(--green-light);border-color:var(--green-border);color:var(--ok-text);}
+.choice-btn.ng{background:var(--red-light);border-color:var(--red-border);color:var(--ng-text);}
+.fill-row{display:flex;align-items:center;gap:8px;margin-bottom:.6rem;flex-wrap:wrap;}
+.fill-idx{font-size:13px;color:var(--text-muted);min-width:28px;flex-shrink:0;}
+.fill-input{flex:1;min-width:160px;}
+.fill-input.ok{background:var(--green-light);border-color:var(--green-border);color:var(--ok-text);}
+.fill-input.ng{background:var(--red-light);border-color:var(--red-border);color:var(--ng-text);}
+.fill-hint{font-size:12px;color:var(--green-dark);margin:-2px 0 6px 36px;}
+.hint-box{font-size:13px;color:var(--text-muted);background:var(--surface2);border-radius:var(--radius);padding:.5rem .8rem;margin-bottom:.8rem}
+.feedback{padding:.65rem 1rem;border-radius:var(--radius);font-size:14px;margin:1rem 0;display:flex;align-items:flex-start;gap:8px;}
+.feedback.ok{background:var(--green-light);color:var(--ok-text);border:1px solid var(--green-border);}
+.feedback.ng{background:var(--red-light);color:var(--ng-text);border:1px solid var(--red-border);}
+.feedback .xp{margin-left:auto;font-weight:700;white-space:nowrap}
+.explain{border-left:3px solid var(--green);padding:.4rem .9rem;margin-bottom:1rem;font-size:14px;line-height:1.9;background:var(--surface2);border-radius:0 var(--radius) var(--radius) 0}
+.explain .src{display:block;font-size:11px;color:var(--text-hint);margin-top:4px}
+.explain b{color:var(--green-dark);font-weight:700}
+details.note{margin-bottom:1rem;font-size:13px}
+details.note summary{cursor:pointer;color:var(--text-muted)}
+details.note textarea{width:100%;min-height:70px;margin-top:6px;font-size:13px}
+.action-row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
 .counter{font-size:13px;color:var(--text-hint);margin-left:auto;}
+.kbd-hint{font-size:11px;color:var(--text-hint);margin-top:.6rem}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-5px)}40%,80%{transform:translateX(5px)}}
+.shake{animation:shake .35s}
 
-/* ─── 結果画面 ─── */
-.result-card{
-  background:var(--surface);border:1px solid var(--border);
-  border-radius:var(--radius-lg);padding:2.5rem 1.5rem;
-  text-align:center;
+/* ─── 結果 ─── */
+.result-card{text-align:center;padding:2rem 1.25rem}
+.result-score{font-size:60px;font-weight:700;color:var(--green);line-height:1;font-family:'Noto Serif JP',serif;}
+.result-score span{font-size:26px;}
+.result-label{font-size:14px;color:var(--text-muted);margin:.5rem 0 1rem;}
+.result-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:1rem 0 1.25rem}
+.tile{background:var(--surface2);border-radius:var(--radius);padding:.6rem .4rem;text-align:center}
+.tile .v{font-size:20px;font-weight:700;line-height:1.3}
+.tile .k{font-size:11px;color:var(--text-muted)}
+.review-list{text-align:left;margin-top:1rem}
+.review-item{display:flex;gap:8px;padding:.6rem 0;border-top:1px solid var(--border);font-size:13px;line-height:1.7}
+.review-item .mk{flex-shrink:0;font-weight:700;width:1.2em}
+.review-item .mk.ok{color:var(--green)} .review-item .mk.ng{color:var(--red)}
+
+/* ─── 統計 ─── */
+.stat-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:1rem}
+.heat-wrap{overflow-x:auto}
+.heat{display:grid;grid-auto-flow:column;grid-template-rows:repeat(7,12px);gap:3px;width:max-content}
+.heat i{width:12px;height:12px;border-radius:2px;background:var(--heat0)}
+.heat i.l1{background:var(--heat1)} .heat i.l2{background:var(--heat2)} .heat i.l3{background:var(--heat3)} .heat i.l4{background:var(--heat4)}
+.heat i.future{background:transparent}
+.hist{width:100%;border-collapse:collapse;font-size:12px}
+.hist th,.hist td{padding:6px 4px;border-bottom:1px solid var(--border);text-align:left}
+.hist th{color:var(--text-hint);font-weight:400}
+.qlist .qi{padding:.7rem 0;border-top:1px solid var(--border);font-size:13px}
+.qlist .qi .meta{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:4px}
+.qlist .qi .txt{line-height:1.85}
+.qlist .qi .txt .blank-token{min-width:3em}
+.qlist .qi .txt.masked .blank-token{color:transparent}
+.qlist .qi .txt.masked .blank-token:hover{color:var(--green-dark)}
+
+/* ─── 実績 ─── */
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.bdg{border:1px solid var(--border);border-radius:var(--radius-lg);padding:.8rem;text-align:center;background:var(--surface)}
+.bdg .i{font-size:30px;line-height:1.3}
+.bdg .n{font-weight:700;font-size:13px}
+.bdg .d{font-size:11px;color:var(--text-muted);line-height:1.5}
+.bdg.locked{opacity:.45;filter:grayscale(1)}
+.bdg .dt{font-size:10px;color:var(--text-hint)}
+.titles{display:flex;flex-direction:column;gap:4px;font-size:13px}
+.titles div{display:flex;gap:8px;align-items:center}
+.titles .cur{font-weight:700;color:var(--green-dark)}
+
+/* ─── プロフィール ─── */
+.user-list{display:flex;flex-direction:column;gap:6px}
+.user-item{display:flex;align-items:center;gap:10px;padding:.55rem .75rem;border:1px solid var(--border);border-radius:var(--radius);}
+.user-item.cur{border-color:var(--green-border);background:var(--green-light)}
+.user-item .av{font-size:22px}
+.avatars{display:flex;flex-wrap:wrap;gap:6px;margin:.4rem 0 .8rem}
+.avatars button{font-size:22px;width:42px;height:42px;border-radius:10px;border:1px solid var(--border-strong);background:var(--surface);cursor:pointer}
+.avatars button.sel{border:2px solid var(--green);background:var(--green-light)}
+.form-row{margin-bottom:.8rem}
+.form-row label{display:block;font-size:12px;color:var(--text-muted);margin-bottom:3px}
+.notice{font-size:12px;color:var(--amber);background:var(--amber-light);border-radius:var(--radius);padding:.55rem .8rem;line-height:1.7}
+.welcome{text-align:center;padding:1.5rem 1rem}
+.welcome .big{font-size:44px}
+
+/* ─── トースト・演出 ─── */
+.toasts{position:fixed;left:50%;top:14px;transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;z-index:50;width:min(92vw,420px);pointer-events:none}
+.toast{background:var(--surface);border:1px solid var(--green-border);border-radius:var(--radius-lg);padding:.65rem 1rem;box-shadow:0 6px 24px rgba(0,0,0,.15);display:flex;gap:10px;align-items:center;font-size:13px;animation:tin .3s ease}
+.toast .i{font-size:24px}
+.toast b{display:block;font-size:14px}
+@keyframes tin{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:none}}
+.confetti{position:fixed;top:-10px;width:8px;height:12px;z-index:40;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(720deg);opacity:.7}}
+.float-xp{position:fixed;z-index:45;font-weight:700;color:var(--green);pointer-events:none;animation:fx 1s ease-out forwards}
+@keyframes fx{to{transform:translateY(-40px);opacity:0}}
+@media (prefers-reduced-motion: reduce){*{animation:none !important;transition:none !important}}
+
+.app-footer{text-align:center;font-size:11px;color:var(--text-hint);margin-top:2.5rem;line-height:1.8}
+
+@media (max-width:520px){
+  .plans{grid-template-columns:minmax(0,1fr)}
+  .stat-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .hud{grid-template-columns:1fr auto}
+  .hud .ring-pill{grid-column:1/-1;justify-self:start}
+  .domain-row{grid-template-columns:7em 1fr 3em}
+  .user-chip .nm{max-width:5em}
 }
-.result-score{font-size:64px;font-weight:700;color:var(--green);line-height:1;font-family:'Noto Serif JP',serif;}
-.result-score span{font-size:28px;}
-.result-label{font-size:14px;color:var(--text-muted);margin:.5rem 0 1.75rem;}
-.result-detail{font-size:13px;color:var(--text-muted);margin-bottom:1.75rem;}
-.result-actions{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
-.result-warn{
-  display:inline-flex;align-items:center;gap:6px;
-  font-size:13px;color:var(--amber);
-  background:var(--amber-light);border-radius:var(--radius);
-  padding:.5rem 1rem;margin-bottom:1.5rem;
-}
-
-/* ─── 空状態 ─── */
-.empty{text-align:center;padding:4rem 1rem;color:var(--text-muted);}
-.empty-icon{font-size:36px;margin-bottom:.75rem;opacity:.4;}
-
-/* ─── フッター ─── */
-.app-footer{text-align:center;font-size:11px;color:var(--text-hint);margin-top:2.5rem;}
 </style>
 </head>
 <body>
 <div class="page">
   <header class="app-header">
-    <h1 class="app-title">国語科 学習指導要領ドリル</h1>
-    <p class="app-subtitle">小学校国語科 教員採用試験対策 — 全50問</p>
-  </header>
-
-  <div class="stats-row" id="statsRow"></div>
-
-  <div class="filter-row">
-    <select id="filterDomain" onchange="onFilter()">
-      <option value="all">すべての領域</option>
-      <option value="目標・総則">目標・総則</option>
-      <option value="知識及び技能">知識及び技能</option>
-      <option value="話すこと・聞くこと">話すこと・聞くこと</option>
-      <option value="書くこと">書くこと</option>
-      <option value="読むこと">読むこと</option>
-      <option value="指導計画・取扱い">指導計画・取扱い</option>
-    </select>
-    <select id="filterGrade" onchange="onFilter()">
-      <option value="all">すべての学年</option>
-      <option value="全学年共通">全学年共通</option>
-      <option value="第1学年・第2学年">第1・2学年</option>
-      <option value="第3学年・第4学年">第3・4学年</option>
-      <option value="第5学年・第6学年">第5・6学年</option>
-    </select>
-    <label class="wrong-toggle">
-      <input type="checkbox" id="wrongOnly" onchange="onFilter()"> 間違えた問題のみ
-    </label>
-  </div>
-
-  <div class="mode-tabs">
-    <button class="mode-tab active" onclick="setMode('choice')">▤ 選択式</button>
-    <button class="mode-tab" onclick="setMode('fill')">✎ 穴埋め式</button>
-  </div>
-
-  <div class="progress-wrap">
-    <div class="progress-meta">
-      <span id="progressLabel">0 / 0</span>
-      <span id="progressPct">0%</span>
+    <div>
+      <h1 class="app-title">国語科 学習指導要領ドリル</h1>
+      <p class="app-subtitle">小学校国語科 教員採用試験対策 — 全<span id="qTotal"></span>問</p>
     </div>
-    <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
-  </div>
-
-  <div id="mainArea"></div>
-
-  <footer class="app-footer">初等国語科教育法 学習支援ツール</footer>
+    <button class="user-chip hidden" id="userChip" onclick="go('profile')" aria-label="ユーザー設定"></button>
+  </header>
+  <div id="hud"></div>
+  <nav class="nav hidden" id="nav">
+    <button data-v="home" onclick="go('home')">🏠 ホーム</button>
+    <button data-v="stats" onclick="go('stats')">📊 記録</button>
+    <button data-v="list" onclick="go('list')">📖 一覧</button>
+    <button data-v="badges" onclick="go('badges')">🏆 実績</button>
+  </nav>
+  <main id="main"></main>
+  <footer class="app-footer">初等国語科教育法 学習支援ツール<br>問題文は小学校学習指導要領（平成29年告示）及び同解説 国語編に基づく学習用の要約です。試験前には必ず原典で確認してください。</footer>
 </div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
 
 <script>
-const DATA = [{"id":1,"section":"国語科改訂の要点","grade":"全学年共通","domain":"目標・総則","question":"国語科で育成を目指す資質・能力を「国語で正確に理解し適切に表現する資質・能力」と規定するとともに、3つの柱で整理した。その3つとは「【①】」「【②】」「【③】」である。","blanks":["知識及び技能","思考力、判断力、表現力等","学びに向かう力、人間性等"],"choices":[["知識及び技能","表現力及び技能","言語知識と技能"],["思考力、判断力、表現力等","創造力、判断力、表現力等","思考力、応用力、表現力等"],["学びに向かう力、人間性等","主体性、多様性、協働性","生きる力、人間性、社会性"]]},{"id":2,"section":"国語科改訂の要点","grade":"全学年共通","domain":"目標・総則","question":"学年別漢字配当表の【①】学年に、都道府県名に用いる漢字【②】字を配当した。また、これに伴い【③】字の配当学年を移行した。","blanks":["第4","25","32"],"choices":[["第3","第4","第5"],["20","25","30"],["28","30","32"]]},{"id":3,"section":"国語科の目標","grade":"全学年共通","domain":"目標・総則","question":"【①】を働かせ、言語活動を通して、国語で正確に理解し適切に表現する資質・能力を育成することを目指す。","blanks":["言葉による見方・考え方"],"choices":[["言葉による見方・考え方","思考力・判断力・表現力","言語感覚と読解力"]]},{"id":4,"section":"国語科の目標","grade":"全学年共通","domain":"目標・総則","question":"国語科の目標(2)：日常生活における人との関わりの中で【①】を高め、【②】を養う。","blanks":["伝え合う力","思考力や想像力"],"choices":[["伝え合う力","読解力","表現力"],["思考力や想像力","言語感覚","創造力や判断力"]]},{"id":5,"section":"国語科の目標","grade":"全学年共通","domain":"目標・総則","question":"国語科の目標(3)：【①】を認識するとともに、言語感覚を養い、国語の【②】を自覚し、国語を尊重してその【③】を図る態度を養う。","blanks":["言葉がもつよさ","大切さ","能力の向上"],"choices":[["言葉がもつよさ","言語の美しさ","語彙の豊かさ"],["大切さ","重要性","素晴らしさ"],["能力の向上","知識の拡充","技能の向上"]]},{"id":6,"section":"各学年の目標","grade":"全学年共通","domain":"目標・総則","question":"各学年の目標は、教科目標の(1)(2)(3)に対応して、【①】のまとまりごとに示されている。","blanks":["2学年"],"choices":[["1学年","2学年","3学年"]]},{"id":7,"section":"各学年の目標","grade":"第1学年・第2学年","domain":"目標・総則","question":"【第1・2学年】思考力等の目標：順序立てて考える力や感じたり【①】したりする力を養い、日常生活における人との関わりの中で【②】を高め、自分の思いや考えを【③】ことができるようにする。","blanks":["想像","伝え合う力","もつ"],"choices":[["想像","思考","観察"],["伝え合う力","表現する力","読解する力"],["もつ","まとめる","広げる"]]},{"id":8,"section":"各学年の目標","grade":"第3学年・第4学年","domain":"目標・総則","question":"【第3・4学年】思考力等の目標：【①】考える力や豊かに感じたり想像したりする力を養い、日常生活における人との関わりの中で伝え合う力を高め、自分の思いや考えを【②】ことができるようにする。","blanks":["筋道立てて","まとめる"],"choices":[["筋道立てて","順序立てて","論理立てて"],["まとめる","もつ","広げる"]]},{"id":9,"section":"各学年の目標","grade":"第5学年・第6学年","domain":"目標・総則","question":"【第5・6学年】思考力等の目標：筋道立てて考える力や豊かに感じたり想像したりする力を養い、日常生活における人との関わりの中で伝え合う力を高め、自分の思いや考えを【①】ことができるようにする。","blanks":["広げる"],"choices":[["広げる","まとめる","深める"]]},{"id":10,"section":"各学年の目標","grade":"第1学年・第2学年","domain":"目標・総則","question":"【第1・2学年】学びに向かう力の目標：言葉がもつよさを【①】とともに、楽しんで読書をし、国語を大切にして、思いや考えを伝え合おうとする態度を養う。","blanks":["感じる"],"choices":[["感じる","気付く","認識する"]]},{"id":11,"section":"各学年の目標","grade":"第3学年・第4学年","domain":"目標・総則","question":"【第3・4学年】学びに向かう力の目標：言葉がもつよさに【①】とともに、【②】読書をし、国語を大切にして、思いや考えを伝え合おうとする態度を養う。","blanks":["気付く","幅広く"],"choices":[["感じる","気付く","認識する"],["幅広く","進んで","楽しんで"]]},{"id":12,"section":"各学年の目標","grade":"第5学年・第6学年","domain":"目標・総則","question":"【第5・6学年】学びに向かう力の目標：言葉がもつよさを【①】とともに、【②】読書をし、国語の大切さを自覚して、思いや考えを伝え合おうとする態度を養う。","blanks":["認識する","進んで"],"choices":[["感じる","気付く","認識する"],["幅広く","進んで","楽しんで"]]},{"id":13,"section":"知識及び技能／言葉の特徴や使い方","grade":"第1学年・第2学年","domain":"知識及び技能","question":"【第1・2学年】話し言葉：音節と文字との関係、【①】による語の意味の違いなどに気付くとともに、姿や口形、発声や発音に注意して話すこと。","blanks":["アクセント"],"choices":[["アクセント","イントネーション","リズム"]]},{"id":14,"section":"知識及び技能／言葉の特徴や使い方","grade":"第1学年・第2学年","domain":"知識及び技能","question":"【第1・2学年】表記：長音、拗音、促音、【①】などの表記、助詞の「は」「へ」及び「を」の使い方、【②】の打ち方、かぎ（「　」）の使い方を理解して文や文章の中で使うこと。","blanks":["撥音","句読点"],"choices":[["撥音","促音","長音"],["句読点","読点","傍点"]]},{"id":15,"section":"知識及び技能／言葉の特徴や使い方","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】話し言葉：相手を見て話したり聞いたりするとともに、言葉の抑揚や強弱、【①】などに注意して話すこと。","blanks":["間の取り方"],"choices":[["間の取り方","声の大きさ","話す速さ"]]},{"id":16,"section":"知識及び技能／言葉の特徴や使い方","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】ローマ字：第3学年においては、日常使われている簡単な単語について、【①】で表記されたものを読み、文や文章の中で書くこと。","blanks":["ローマ字"],"choices":[["ローマ字","アルファベット","仮名"]]},{"id":17,"section":"知識及び技能／言葉の特徴や使い方","grade":"第1学年・第2学年","domain":"知識及び技能","question":"【第1・2学年】語彙：身近なことを表す語句の量を増し、話や文章の中で使うとともに、言葉には【①】による語句のまとまりがあることに気付き、語彙を豊かにすること。","blanks":["意味"],"choices":[["意味","音韻","性質"]]},{"id":18,"section":"知識及び技能／言葉の特徴や使い方","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】語彙：様子や行動、【①】を表す語句の量を増し、話や文章の中で使うとともに、言葉には性質や役割による語句のまとまりがあることを理解し、語彙を豊かにすること。","blanks":["気持ちや性格"],"choices":[["気持ちや性格","思考や感情","行動や表情"]]},{"id":19,"section":"知識及び技能／言葉の特徴や使い方","grade":"第5学年・第6学年","domain":"知識及び技能","question":"【第5・6学年】語彙：【①】に関わる語句の量を増し、語句と語句との関係、語句の【②】について理解し、語彙を豊かにすること。また、語感や言葉の使い方に対する感覚を意識して語句や語句を使うこと。","blanks":["思考","構成や変化"],"choices":[["思考","感情","表現"],["構成や変化","意味や用法","音韻と形態"]]},{"id":20,"section":"知識及び技能／言葉の特徴や使い方","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】文や文章：【①】と述語との関係、修飾と被修飾との関係、指示する語句と【②】する語句の役割、【③】の役割について理解すること。","blanks":["主語","接続","段落"],"choices":[["主語","述語","修飾語"],["接続","指示","修飾"],["段落","文章","節"]]},{"id":21,"section":"知識及び技能／言葉の特徴や使い方","grade":"第1学年・第2学年","domain":"知識及び技能","question":"【第1・2学年】言葉遣い：丁寧な言葉と普通の言葉との違いに気付けて使うとともに、【①】で書かれた文章に慣れること。","blanks":["敬体"],"choices":[["敬体","常体","文語体"]]},{"id":22,"section":"知識及び技能／言葉の特徴や使い方","grade":"第5学年・第6学年","domain":"知識及び技能","question":"【第5・6学年】言葉遣い：日常よく使われる【①】を理解し使い慣れること。","blanks":["敬語"],"choices":[["敬語","敬体","丁寧語"]]},{"id":23,"section":"知識及び技能／言葉の特徴や使い方","grade":"第5学年・第6学年","domain":"知識及び技能","question":"【第5・6学年】表現の技法：【①】などの表現の工夫に気付くこと。","blanks":["比喩や反復"],"choices":[["比喩や反復","体言止めや倒置","擬音語や擬態語"]]},{"id":24,"section":"知識及び技能／情報の扱い方","grade":"第1学年・第2学年","domain":"知識及び技能","question":"【第1・2学年】情報と情報との関係：【①】、相違、事柄の順序など情報と情報との関係について理解すること。","blanks":["共通"],"choices":[["共通","原因","比較"]]},{"id":25,"section":"知識及び技能／情報の扱い方","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】情報と情報との関係：考えとそれを支える【①】、全体と【②】など情報と情報との関係について理解すること。","blanks":["理由や事例","中心"],"choices":[["理由や事例","根拠や論点","原因と結果"],["中心","要点","結論"]]},{"id":26,"section":"知識及び技能／情報の扱い方","grade":"第5学年・第6学年","domain":"知識及び技能","question":"【第5・6学年】情報と情報との関係：【①】など情報と情報との関係について理解すること。","blanks":["原因と結果"],"choices":[["原因と結果","共通と相違","全体と中心"]]},{"id":27,"section":"知識及び技能／情報の扱い方","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】情報の整理：比較や分類の仕方、必要な語句などの書き留め方、【①】の仕方や出典の示し方、【②】や事典の使い方を理解し使うこと。","blanks":["引用","辞書"],"choices":[["引用","要約","転用"],["辞書","図鑑","事典"]]},{"id":28,"section":"知識及び技能／言語文化","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】伝統的な言語文化：易しい文語調の短歌や俳句を音読したり暗唱したりするなどして、言葉の【①】に親しむこと。","blanks":["響きやリズム"],"choices":[["響きやリズム","意味と用法","歴史と文化"]]},{"id":29,"section":"知識及び技能／言語文化","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】慣用表現：長い間使われてきた【①】などの意味を知り、使うこと。","blanks":["ことわざや慣用句、故事成語"],"choices":[["ことわざや慣用句、故事成語","和歌や俳句、連歌","神話や伝説、民話"]]},{"id":30,"section":"知識及び技能／言語文化","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】漢字の構成：漢字が、【①】などから構成されていることについて理解すること。","blanks":["へんやつくり"],"choices":[["へんやつくり","音読みと訓読み","画数と筆順"]]},{"id":31,"section":"知識及び技能／言語文化","grade":"第5学年・第6学年","domain":"知識及び技能","question":"【第5・6学年】言葉の由来や変化：語句の由来などに関心をもつとともに、時間の経過による言葉の変化や世代による言葉の違いに気付き、【①】との違いを理解すること。","blanks":["共通語と方言"],"choices":[["共通語と方言","書き言葉と話し言葉","古語と現代語"]]},{"id":32,"section":"知識及び技能／言語文化","grade":"第3学年以上","domain":"知識及び技能","question":"書写：毛筆を使用する書写の指導は【①】以上の各学年で行い、各学年年間【②】単位時間程度を配当する。","blanks":["第3学年","30"],"choices":[["第1学年","第2学年","第3学年"],["20","25","30"]]},{"id":33,"section":"思考力・判断力・表現力等／話すこと・聞くこと","grade":"第1学年・第2学年","domain":"話すこと・聞くこと","question":"【第1・2学年】構成の検討：相手に伝わるように、行動したことや経験したことに基づいて、話す事柄の【①】を考えること。","blanks":["順序"],"choices":[["順序","構成","中心"]]},{"id":34,"section":"思考力・判断力・表現力等／話すこと・聞くこと","grade":"第3学年・第4学年","domain":"話すこと・聞くこと","question":"【第3・4学年】構成の検討：相手に伝わるように、理由や事例などを挙げながら、話の【①】が明確になるよう【②】を考えること。","blanks":["中心","話の構成"],"choices":[["中心","要点","順序"],["話の構成","話の展開","話の順序"]]},{"id":35,"section":"思考力・判断力・表現力等／話すこと・聞くこと","grade":"第1学年・第2学年","domain":"話すこと・聞くこと","question":"【第1・2学年】表現：伝えたい事柄や相手に応じて、【①】などを工夫すること。","blanks":["声の大きさや速さ"],"choices":[["声の大きさや速さ","言葉の抑揚や強弱","資料の活用"]]},{"id":36,"section":"思考力・判断力・表現力等／話すこと・聞くこと","grade":"第3学年・第4学年","domain":"話すこと・聞くこと","question":"【第3・4学年】表現：話の中心や話す場面を意識して、【①】などを工夫すること。","blanks":["言葉の抑揚や強弱、間の取り方"],"choices":[["言葉の抑揚や強弱、間の取り方","声の大きさや速さ","資料の活用や表現の工夫"]]},{"id":37,"section":"思考力・判断力・表現力等／話すこと・聞くこと","grade":"第3学年・第4学年","domain":"話すこと・聞くこと","question":"【第3・4学年】話合いの進め方：目的や進め方を確認し、【①】などの役割を果たしながら話し合い、互いの意見の【②】に着目して、考えをまとめること。","blanks":["司会","共通点や相違点"],"choices":[["司会","記録係","発表者"],["共通点や相違点","長所と短所","原因と結果"]]},{"id":38,"section":"思考力・判断力・表現力等／話すこと・聞くこと","grade":"第5学年・第6学年","domain":"話すこと・聞くこと","question":"【第5・6学年】話合いの進め方：互いの【①】を明確にしながら【②】に話し合い、考えを広げたりまとめたりすること。","blanks":["立場や意図","計画的"],"choices":[["立場や意図","共通点や相違点","意見と理由"],["計画的","積極的","協力的"]]},{"id":39,"section":"思考力・判断力・表現力等／書くこと","grade":"第3学年・第4学年","domain":"書くこと","question":"【第3・4学年】構成の検討：書く内容の中心を明確にし、内容のまとまりで【①】をつくったり、段落相互の関係に注意したりして、文章の構成を考えること。","blanks":["段落"],"choices":[["段落","章","節"]]},{"id":40,"section":"思考力・判断力・表現力等／書くこと","grade":"第5学年・第6学年","domain":"書くこと","question":"【第5・6学年】構成の検討：【①】文章となるように、文章全体の構成や展開を考えること。","blanks":["筋道の通った"],"choices":[["筋道の通った","段落が明確な","事実と意見が区別された"]]},{"id":41,"section":"思考力・判断力・表現力等／書くこと","grade":"第3学年・第4学年","domain":"書くこと","question":"【第3・4学年】考えの形成・記述：自分の考えとそれを支える【①】との関係を明確にして、書き表し方を工夫すること。","blanks":["理由や事例"],"choices":[["理由や事例","感想や意見","図表やグラフ"]]},{"id":42,"section":"思考力・判断力・表現力等／書くこと","grade":"第5学年・第6学年","domain":"書くこと","question":"【第5・6学年】考えの形成・記述：引用したり、【①】などを用いたりして、自分の考えが伝わるように書き表し方を工夫すること。","blanks":["図表やグラフ"],"choices":[["図表やグラフ","写真や絵","事例や体験"]]},{"id":43,"section":"思考力・判断力・表現力等／読むこと","grade":"第3学年・第4学年","domain":"読むこと","question":"【第3・4学年】構造と内容の把握（説明的な文章）：【①】の関係に着目しながら、考えとそれを支える理由や事例との関係などについて、叙述を基に捉えること。","blanks":["段落相互"],"choices":[["段落相互","文と文","語句と語句"]]},{"id":44,"section":"思考力・判断力・表現力等／読むこと","grade":"第5学年・第6学年","domain":"読むこと","question":"【第5・6学年】構造と内容の把握（説明的な文章）：事実と感想、意見などの関係を叙述を基に押さえ、文章全体の構成を捉えて【①】すること。","blanks":["要旨を把握"],"choices":[["要旨を把握","内容を要約","主題を理解"]]},{"id":45,"section":"思考力・判断力・表現力等／読むこと","grade":"第3学年・第4学年","domain":"読むこと","question":"【第3・4学年】精査・解釈（文学的な文章）：登場人物の【①】や性格、情景について、場面の移り変わりと結び付けて具体的に想像すること。","blanks":["気持ちの変化"],"choices":[["気持ちの変化","相互関係","行動や言葉"]]},{"id":46,"section":"思考力・判断力・表現力等／読むこと","grade":"第5学年・第6学年","domain":"読むこと","question":"【第5・6学年】精査・解釈（説明的な文章）：目的に応じて、文章と図表などを結び付けるなどして必要な情報を見付けたり、【①】について考えたりすること。","blanks":["論の進め方"],"choices":[["論の進め方","文章の構成","筆者の意図"]]},{"id":47,"section":"指導計画の作成と内容の取扱い","grade":"全学年共通","domain":"指導計画・取扱い","question":"「A 話すこと・聞くこと」の年間配当時間：第1・2学年では年間【①】単位時間程度、第3・4学年では年間【②】単位時間程度、第5・6学年では年間【③】単位時間程度。","blanks":["35","30","25"],"choices":[["25","30","35"],["25","30","35"],["25","30","35"]]},{"id":48,"section":"指導計画の作成と内容の取扱い","grade":"全学年共通","domain":"指導計画・取扱い","question":"「B 書くこと」の年間配当時間：第1・2学年では年間【①】単位時間程度、第3・4学年では年間【②】単位時間程度、第5・6学年では年間【③】単位時間程度。","blanks":["100","85","55"],"choices":[["85","100","120"],["70","85","100"],["45","55","70"]]},{"id":49,"section":"指導計画の作成と内容の取扱い","grade":"全学年共通","domain":"指導計画・取扱い","question":"学校図書館の3機能：【①】（読書活動・読書指導の場）、【②】（学習活動を支援し理解を深める）、【③】（情報ニーズへの対応・情報活用能力の育成）。","blanks":["読書センター","学習センター","情報センター"],"choices":[["読書センター","図書センター","文化センター"],["学習センター","教育センター","研究センター"],["情報センター","調査センター","資料センター"]]},{"id":50,"section":"指導計画の作成と内容の取扱い","grade":"全学年共通","domain":"指導計画・取扱い","question":"「C 読むこと」に関する指導については、【①】を高め、日常生活において読書活動を活発に行うようにするとともに、他教科等の学習における読書の指導や【②】における指導との関連を考えて行うこと。","blanks":["読書意欲","学校図書館"],"choices":[["読書意欲","読書習慣","言語感覚"],["学校図書館","公共図書館","家庭"]]}];
+/* ================= 問題データ ================= */
+const DATA = [{"id":1,"section":"国語科改訂の要点","grade":"全学年共通","domain":"目標・総則","question":"国語科で育成を目指す資質・能力を「国語で正確に理解し適切に表現する資質・能力」と規定するとともに、三つの柱で整理した。その三つとは「【①】」「【②】」「【③】」である。","blanks":["知識及び技能","思考力、判断力、表現力等","学びに向かう力、人間性等"],"choices":[["知識及び技能","表現力及び技能","言語知識と技能"],["思考力、判断力、表現力等","創造力、判断力、表現力等","思考力、応用力、表現力等"],["学びに向かう力、人間性等","主体性、多様性、協働性","生きる力、人間性、社会性"]]},{"id":2,"section":"国語科改訂の要点","grade":"全学年共通","domain":"目標・総則","question":"学年別漢字配当表の【①】学年に、都道府県名に用いる漢字【②】字を配当した。また、これに伴い【③】字の配当学年を移行した。","blanks":["第4","25","32"],"choices":[["第3","第4","第5"],["20","25","30"],["28","30","32"]]},{"id":3,"section":"国語科の目標","grade":"全学年共通","domain":"目標・総則","question":"【①】を働かせ、言語活動を通して、国語で正確に理解し適切に表現する資質・能力を育成することを目指す。","blanks":["言葉による見方・考え方"],"choices":[["言葉による見方・考え方","思考力・判断力・表現力","言語感覚と読解力"]]},{"id":4,"section":"国語科の目標","grade":"全学年共通","domain":"目標・総則","question":"国語科の目標(2)：日常生活における人との関わりの中で【①】を高め、【②】を養う。","blanks":["伝え合う力","思考力や想像力"],"choices":[["伝え合う力","読解力","表現力"],["思考力や想像力","言語感覚","創造力や判断力"]]},{"id":5,"section":"国語科の目標","grade":"全学年共通","domain":"目標・総則","question":"国語科の目標(3)：【①】を認識するとともに、言語感覚を養い、国語の【②】を自覚し、国語を尊重してその【③】を図る態度を養う。","blanks":["言葉がもつよさ","大切さ","能力の向上"],"choices":[["言葉がもつよさ","言語の美しさ","語彙の豊かさ"],["大切さ","重要性","素晴らしさ"],["能力の向上","知識の拡充","技能の向上"]]},{"id":6,"section":"各学年の目標","grade":"全学年共通","domain":"目標・総則","question":"各学年の目標は、教科目標の(1)(2)(3)に対応して、【①】のまとまりごとに示されている。","blanks":["2学年"],"choices":[["1学年","2学年","3学年"]]},{"id":7,"section":"各学年の目標","grade":"第1学年・第2学年","domain":"目標・総則","question":"【第1・2学年】思考力等の目標：順序立てて考える力や感じたり【①】したりする力を養い、日常生活における人との関わりの中で【②】を高め、自分の思いや考えを【③】ことができるようにする。","blanks":["想像","伝え合う力","もつ"],"choices":[["想像","思考","観察"],["伝え合う力","表現する力","読解する力"],["もつ","まとめる","広げる"]]},{"id":8,"section":"各学年の目標","grade":"第3学年・第4学年","domain":"目標・総則","question":"【第3・4学年】思考力等の目標：【①】考える力や豊かに感じたり想像したりする力を養い、日常生活における人との関わりの中で伝え合う力を高め、自分の思いや考えを【②】ことができるようにする。","blanks":["筋道立てて","まとめる"],"choices":[["筋道立てて","順序立てて","論理立てて"],["まとめる","もつ","広げる"]]},{"id":9,"section":"各学年の目標","grade":"第5学年・第6学年","domain":"目標・総則","question":"【第5・6学年】思考力等の目標：筋道立てて考える力や豊かに感じたり想像したりする力を養い、日常生活における人との関わりの中で伝え合う力を高め、自分の思いや考えを【①】ことができるようにする。","blanks":["広げる"],"choices":[["広げる","まとめる","深める"]]},{"id":10,"section":"各学年の目標","grade":"第1学年・第2学年","domain":"目標・総則","question":"【第1・2学年】学びに向かう力の目標：言葉がもつよさを【①】とともに、楽しんで読書をし、国語を大切にして、思いや考えを伝え合おうとする態度を養う。","blanks":["感じる"],"choices":[["感じる","気付く","認識する"]]},{"id":11,"section":"各学年の目標","grade":"第3学年・第4学年","domain":"目標・総則","question":"【第3・4学年】学びに向かう力の目標：言葉がもつよさに【①】とともに、【②】読書をし、国語を大切にして、思いや考えを伝え合おうとする態度を養う。","blanks":["気付く","幅広く"],"choices":[["感じる","気付く","認識する"],["幅広く","進んで","楽しんで"]]},{"id":12,"section":"各学年の目標","grade":"第5学年・第6学年","domain":"目標・総則","question":"【第5・6学年】学びに向かう力の目標：言葉がもつよさを【①】とともに、【②】読書をし、国語の大切さを自覚して、思いや考えを伝え合おうとする態度を養う。","blanks":["認識する","進んで"],"choices":[["感じる","気付く","認識する"],["幅広く","進んで","楽しんで"]]},{"id":13,"section":"知識及び技能／言葉の特徴や使い方","grade":"第1学年・第2学年","domain":"知識及び技能","question":"【第1・2学年】話し言葉：音節と文字との関係、【①】による語の意味の違いなどに気付くとともに、姿勢や口形、発声や発音に注意して話すこと。","blanks":["アクセント"],"choices":[["アクセント","イントネーション","リズム"]]},{"id":14,"section":"知識及び技能／言葉の特徴や使い方","grade":"第1学年・第2学年","domain":"知識及び技能","question":"【第1・2学年】表記：長音、拗音、促音、【①】などの表記、助詞の「は」、「へ」及び「を」の使い方、【②】の打ち方、かぎ（「　」）の使い方を理解して文や文章の中で使うこと。","blanks":["撥音","句読点"],"choices":[["撥音","促音","長音"],["句読点","読点","傍点"]]},{"id":15,"section":"知識及び技能／言葉の特徴や使い方","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】話し言葉：相手を見て話したり聞いたりするとともに、言葉の抑揚や強弱、【①】などに注意して話すこと。","blanks":["間の取り方"],"choices":[["間の取り方","声の大きさ","話す速さ"]]},{"id":16,"section":"知識及び技能／言葉の特徴や使い方","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】ローマ字：第3学年においては、日常使われている簡単な単語について、【①】で表記されたものを読み、【①】で書くこと。","blanks":["ローマ字"],"choices":[["ローマ字","アルファベット","仮名"]]},{"id":17,"section":"知識及び技能／言葉の特徴や使い方","grade":"第1学年・第2学年","domain":"知識及び技能","question":"【第1・2学年】語彙：身近なことを表す語句の量を増し、話や文章の中で使うとともに、言葉には【①】による語句のまとまりがあることに気付き、語彙を豊かにすること。","blanks":["意味"],"choices":[["意味","音韻","性質"]]},{"id":18,"section":"知識及び技能／言葉の特徴や使い方","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】語彙：様子や行動、【①】を表す語句の量を増し、話や文章の中で使うとともに、言葉には性質や役割による語句のまとまりがあることを理解し、語彙を豊かにすること。","blanks":["気持ちや性格"],"choices":[["気持ちや性格","思考や感情","行動や表情"]]},{"id":19,"section":"知識及び技能／言葉の特徴や使い方","grade":"第5学年・第6学年","domain":"知識及び技能","question":"【第5・6学年】語彙：【①】に関わる語句の量を増し、語句と語句との関係、語句の【②】について理解し、語彙を豊かにすること。また、語感や言葉の使い方に対する感覚を意識して語や語句を使うこと。","blanks":["思考","構成や変化"],"choices":[["思考","感情","表現"],["構成や変化","意味や用法","音韻と形態"]]},{"id":20,"section":"知識及び技能／言葉の特徴や使い方","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】文や文章：【①】と述語との関係、修飾と被修飾との関係、指示する語句と【②】する語句の役割、【③】の役割について理解すること。","blanks":["主語","接続","段落"],"choices":[["主語","述語","修飾語"],["接続","指示","修飾"],["段落","文章","節"]]},{"id":21,"section":"知識及び技能／言葉の特徴や使い方","grade":"第1学年・第2学年","domain":"知識及び技能","question":"【第1・2学年】言葉遣い：丁寧な言葉と普通の言葉との違いに気を付けて使うとともに、【①】で書かれた文章に慣れること。","blanks":["敬体"],"choices":[["敬体","常体","文語体"]]},{"id":22,"section":"知識及び技能／言葉の特徴や使い方","grade":"第5学年・第6学年","domain":"知識及び技能","question":"【第5・6学年】言葉遣い：日常よく使われる【①】を理解し使い慣れること。","blanks":["敬語"],"choices":[["敬語","敬体","丁寧語"]]},{"id":23,"section":"知識及び技能／言葉の特徴や使い方","grade":"第5学年・第6学年","domain":"知識及び技能","question":"【第5・6学年】表現の技法：【①】などの表現の工夫に気付くこと。","blanks":["比喩や反復"],"choices":[["比喩や反復","体言止めや倒置","擬音語や擬態語"]]},{"id":24,"section":"知識及び技能／情報の扱い方","grade":"第1学年・第2学年","domain":"知識及び技能","question":"【第1・2学年】情報と情報との関係：【①】、相違、事柄の順序など情報と情報との関係について理解すること。","blanks":["共通"],"choices":[["共通","原因","比較"]]},{"id":25,"section":"知識及び技能／情報の扱い方","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】情報と情報との関係：考えとそれを支える【①】、全体と【②】など情報と情報との関係について理解すること。","blanks":["理由や事例","中心"],"choices":[["理由や事例","根拠や論点","原因と結果"],["中心","要点","結論"]]},{"id":26,"section":"知識及び技能／情報の扱い方","grade":"第5学年・第6学年","domain":"知識及び技能","question":"【第5・6学年】情報と情報との関係：【①】など情報と情報との関係について理解すること。","blanks":["原因と結果"],"choices":[["原因と結果","共通と相違","全体と中心"]]},{"id":27,"section":"知識及び技能／情報の扱い方","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】情報の整理：比較や分類の仕方、必要な語句などの書き留め方、【①】の仕方や出典の示し方、【②】や事典の使い方を理解し使うこと。","blanks":["引用","辞書"],"choices":[["引用","要約","転用"],["辞書","図鑑","事典"]]},{"id":28,"section":"知識及び技能／言語文化","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】伝統的な言語文化：易しい文語調の短歌や俳句を音読したり暗唱したりするなどして、言葉の【①】に親しむこと。","blanks":["響きやリズム"],"choices":[["響きやリズム","意味と用法","歴史と文化"]]},{"id":29,"section":"知識及び技能／言語文化","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】慣用表現：長い間使われてきた【①】などの意味を知り、使うこと。","blanks":["ことわざや慣用句、故事成語"],"choices":[["ことわざや慣用句、故事成語","和歌や俳句、連歌","神話や伝説、民話"]]},{"id":30,"section":"知識及び技能／言語文化","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】漢字の構成：漢字が、【①】などから構成されていることについて理解すること。","blanks":["へんやつくり"],"choices":[["へんやつくり","音読みと訓読み","画数と筆順"]]},{"id":31,"section":"知識及び技能／言語文化","grade":"第5学年・第6学年","domain":"知識及び技能","question":"【第5・6学年】言葉の由来や変化：語句の由来などに関心をもつとともに、時間の経過による言葉の変化や世代による言葉の違いに気付き、【①】との違いを理解すること。","blanks":["共通語と方言"],"choices":[["共通語と方言","書き言葉と話し言葉","古語と現代語"]]},{"id":32,"section":"知識及び技能／言語文化","grade":"第3学年以上","domain":"知識及び技能","question":"書写：毛筆を使用する書写の指導は【①】以上の各学年で行い、各学年年間【②】単位時間程度を配当する。","blanks":["第3学年","30"],"choices":[["第1学年","第2学年","第3学年"],["20","25","30"]]},{"id":33,"section":"思考力・判断力・表現力等／話すこと・聞くこと","grade":"第1学年・第2学年","domain":"話すこと・聞くこと","question":"【第1・2学年】構成の検討：相手に伝わるように、行動したことや経験したことに基づいて、話す事柄の【①】を考えること。","blanks":["順序"],"choices":[["順序","構成","中心"]]},{"id":34,"section":"思考力・判断力・表現力等／話すこと・聞くこと","grade":"第3学年・第4学年","domain":"話すこと・聞くこと","question":"【第3・4学年】構成の検討：相手に伝わるように、理由や事例などを挙げながら、話の【①】が明確になるよう【②】を考えること。","blanks":["中心","話の構成"],"choices":[["中心","要点","順序"],["話の構成","話の展開","話の順序"]]},{"id":35,"section":"思考力・判断力・表現力等／話すこと・聞くこと","grade":"第1学年・第2学年","domain":"話すこと・聞くこと","question":"【第1・2学年】表現：伝えたい事柄や相手に応じて、【①】などを工夫すること。","blanks":["声の大きさや速さ"],"choices":[["声の大きさや速さ","言葉の抑揚や強弱","資料の活用"]]},{"id":36,"section":"思考力・判断力・表現力等／話すこと・聞くこと","grade":"第3学年・第4学年","domain":"話すこと・聞くこと","question":"【第3・4学年】表現：話の中心や話す場面を意識して、【①】などを工夫すること。","blanks":["言葉の抑揚や強弱、間の取り方"],"choices":[["言葉の抑揚や強弱、間の取り方","声の大きさや速さ","資料の活用や表現の工夫"]]},{"id":37,"section":"思考力・判断力・表現力等／話すこと・聞くこと","grade":"第3学年・第4学年","domain":"話すこと・聞くこと","question":"【第3・4学年】話合いの進め方：目的や進め方を確認し、【①】などの役割を果たしながら話し合い、互いの意見の【②】に着目して、考えをまとめること。","blanks":["司会","共通点や相違点"],"choices":[["司会","記録係","発表者"],["共通点や相違点","長所と短所","原因と結果"]]},{"id":38,"section":"思考力・判断力・表現力等／話すこと・聞くこと","grade":"第5学年・第6学年","domain":"話すこと・聞くこと","question":"【第5・6学年】話合いの進め方：互いの【①】を明確にしながら【②】に話し合い、考えを広げたりまとめたりすること。","blanks":["立場や意図","計画的"],"choices":[["立場や意図","共通点や相違点","意見と理由"],["計画的","積極的","協力的"]]},{"id":39,"section":"思考力・判断力・表現力等／書くこと","grade":"第3学年・第4学年","domain":"書くこと","question":"【第3・4学年】構成の検討：書く内容の中心を明確にし、内容のまとまりで【①】をつくったり、段落相互の関係に注意したりして、文章の構成を考えること。","blanks":["段落"],"choices":[["段落","章","節"]]},{"id":40,"section":"思考力・判断力・表現力等／書くこと","grade":"第5学年・第6学年","domain":"書くこと","question":"【第5・6学年】構成の検討：【①】文章となるように、文章全体の構成や展開を考えること。","blanks":["筋道の通った"],"choices":[["筋道の通った","段落が明確な","事実と意見が区別された"]]},{"id":41,"section":"思考力・判断力・表現力等／書くこと","grade":"第3学年・第4学年","domain":"書くこと","question":"【第3・4学年】考えの形成・記述：自分の考えとそれを支える【①】との関係を明確にして、書き表し方を工夫すること。","blanks":["理由や事例"],"choices":[["理由や事例","感想や意見","図表やグラフ"]]},{"id":42,"section":"思考力・判断力・表現力等／書くこと","grade":"第5学年・第6学年","domain":"書くこと","question":"【第5・6学年】考えの形成・記述：引用したり、【①】などを用いたりして、自分の考えが伝わるように書き表し方を工夫すること。","blanks":["図表やグラフ"],"choices":[["図表やグラフ","写真や絵","事例や体験"]]},{"id":43,"section":"思考力・判断力・表現力等／読むこと","grade":"第3学年・第4学年","domain":"読むこと","question":"【第3・4学年】構造と内容の把握（説明的な文章）：【①】の関係に着目しながら、考えとそれを支える理由や事例との関係などについて、叙述を基に捉えること。","blanks":["段落相互"],"choices":[["段落相互","文と文","語句と語句"]]},{"id":44,"section":"思考力・判断力・表現力等／読むこと","grade":"第5学年・第6学年","domain":"読むこと","question":"【第5・6学年】構造と内容の把握（説明的な文章）：事実と感想、意見などとの関係を叙述を基に押さえ、文章全体の構成を捉えて【①】すること。","blanks":["要旨を把握"],"choices":[["要旨を把握","内容を要約","主題を理解"]]},{"id":45,"section":"思考力・判断力・表現力等／読むこと","grade":"第3学年・第4学年","domain":"読むこと","question":"【第3・4学年】精査・解釈（文学的な文章）：登場人物の【①】や性格、情景について、場面の移り変わりと結び付けて具体的に想像すること。","blanks":["気持ちの変化"],"choices":[["気持ちの変化","相互関係","行動や言葉"]]},{"id":46,"section":"思考力・判断力・表現力等／読むこと","grade":"第5学年・第6学年","domain":"読むこと","question":"【第5・6学年】精査・解釈（説明的な文章）：目的に応じて、文章と図表などを結び付けるなどして必要な情報を見付けたり、【①】について考えたりすること。","blanks":["論の進め方"],"choices":[["論の進め方","文章の構成","筆者の意図"]]},{"id":47,"section":"指導計画の作成と内容の取扱い","grade":"全学年共通","domain":"指導計画・取扱い","question":"「A 話すこと・聞くこと」の年間配当時間：第1・2学年では年間【①】単位時間程度、第3・4学年では年間【②】単位時間程度、第5・6学年では年間【③】単位時間程度。","blanks":["35","30","25"],"choices":[["25","30","35"],["25","30","35"],["25","30","35"]]},{"id":48,"section":"指導計画の作成と内容の取扱い","grade":"全学年共通","domain":"指導計画・取扱い","question":"「B 書くこと」の年間配当時間：第1・2学年では年間【①】単位時間程度、第3・4学年では年間【②】単位時間程度、第5・6学年では年間【③】単位時間程度。","blanks":["100","85","55"],"choices":[["85","100","120"],["70","85","100"],["45","55","70"]]},{"id":49,"section":"指導計画の作成と内容の取扱い","grade":"全学年共通","domain":"指導計画・取扱い","question":"学校図書館の3機能：【①】（読書活動・読書指導の場）、【②】（学習活動を支援し理解を深める）、【③】（情報ニーズへの対応・情報活用能力の育成）。","blanks":["読書センター","学習センター","情報センター"],"choices":[["読書センター","図書センター","文化センター"],["学習センター","教育センター","研究センター"],["情報センター","調査センター","資料センター"]]},{"id":50,"section":"指導計画の作成と内容の取扱い","grade":"全学年共通","domain":"指導計画・取扱い","question":"「C 読むこと」に関する指導については、【①】を高め、日常生活において読書活動を活発に行うようにするとともに、他教科等の学習における読書の指導や【②】における指導との関連を考えて行うこと。","blanks":["読書意欲","学校図書館"],"choices":[["読書意欲","読書習慣","言語感覚"],["学校図書館","公共図書館","家庭"]]}];
+const MARKS='①②③④⑤';
+const DOMAINS=[...new Set(DATA.map(q=>q.domain))];
+const DOMAIN_ORDER=['目標・総則','知識及び技能','話すこと・聞くこと','書くこと','読むこと','指導計画・取扱い'];
+DOMAINS.sort((a,b)=>DOMAIN_ORDER.indexOf(a)-DOMAIN_ORDER.indexOf(b));
+const GRADES=['全学年共通','第1学年・第2学年','第3学年・第4学年','第5学年・第6学年','第3学年以上'].filter(g=>DATA.some(q=>q.grade===g));
+document.getElementById('qTotal').textContent=DATA.length;
 
-let mode='choice', filterDomain='all', filterGrade='all', wrongOnly=false;
-let wrongIds=new Set(), answeredIds=new Set(), correctIds=new Set();
-let queue=[], current=0, answered=false, blankStates=[];
+/* ================= 定数 ================= */
+// ライトナー方式：箱番号ごとの次回復習までの日数
+const INTERVALS={1:1,2:3,3:7,4:14,5:30};
+const STATUS_LABEL={new:'未学習',learning:'学習中',solid:'定着',master:'習得'};
+const AVATARS=['🦊','🐼','🐱','🐶','🦉','🐧','🐢','🐰','🦁','🐨','🌸','📚','✏️','🍀','⭐','🎓'];
+const TITLES=['国語ビギナー','教育実習生','新任教員','学級担任','学年主任','研究主任','指導教諭','教頭先生','校長先生','指導要領マスター'];
+const TEST_SIZE=20, QUICK_SIZE=10, WEAK_SIZE=15;
 
-function getFiltered(){
-  return DATA.filter(q=>{
-    if(filterDomain!=='all'&&q.domain!==filterDomain) return false;
-    if(filterGrade!=='all'&&q.grade!==filterGrade) return false;
-    if(wrongOnly&&!wrongIds.has(q.id)) return false;
-    return true;
+/* ================= 保存（localStorage） ================= */
+const PREFIX='kokugoDrill.v2.';
+const mem={};
+let storageOK=true;
+try{localStorage.setItem(PREFIX+'_t','1');localStorage.removeItem(PREFIX+'_t');}catch(e){storageOK=false;}
+const store={
+  get(k,d){try{const v=storageOK?localStorage.getItem(PREFIX+k):mem[k];return v!=null?JSON.parse(v):d;}catch(e){return d;}},
+  set(k,v){const s=JSON.stringify(v);try{if(storageOK)localStorage.setItem(PREFIX+k,s);else mem[k]=s;}catch(e){mem[k]=s;}},
+  del(k){try{if(storageOK)localStorage.removeItem(PREFIX+k);}catch(e){} delete mem[k];}
+};
+
+function newUserData(){
+  return {qs:{},xp:0,streak:{count:0,last:null},days:{},sessions:[],badges:{},notes:{},flags:{},
+    settings:{goal:10,sound:true,format:'choice'},bestCombo:0,fillCorrect:0};
+}
+let users=store.get('users',[]);   // [{id,name,avatar,created}]
+let uid=store.get('current',null);
+let U=null;                          // 現在のユーザーの学習データ
+function loadUser(id){
+  uid=id; store.set('current',id);
+  U=Object.assign(newUserData(),store.get('u.'+id,{}));
+  U.settings=Object.assign(newUserData().settings,U.settings||{});
+}
+function save(){ if(uid) store.set('u.'+uid,U); }
+function me(){ return users.find(x=>x.id===uid); }
+
+/* ================= ユーティリティ ================= */
+const $=id=>document.getElementById(id);
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function dkey(d=new Date()){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function addDays(key,n){const [y,m,d]=key.split('-').map(Number);return dkey(new Date(y,m-1,d+n));}
+function today(){return dkey();}
+function fmtTime(sec){sec=Math.round(sec);return `${Math.floor(sec/60)}:${String(sec%60).padStart(2,'0')}`;}
+function norm(s){return String(s).normalize('NFKC').replace(/\s+/g,'').replace(/[,，]/g,'、').replace(/[･]/g,'・');}
+function lev(a,b){const m=a.length,n=b.length;const d=Array.from({length:m+1},(_,i)=>[i]);for(let j=1;j<=n;j++)d[0][j]=j;
+  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[m][n];}
+
+/* ================= 学習ロジック ================= */
+function qstate(id){return U.qs[id];}
+function status(id){const s=U.qs[id];if(!s||!s.n)return 'new';if(s.box>=5)return 'master';if(s.box>=3)return 'solid';return 'learning';}
+function isDue(id){const s=U.qs[id];return !!(s&&s.n&&s.due<=today());}
+function needsReview(id){const s=U.qs[id];return !!(s&&s.n&&(s.lastOk===false||s.due<=today()));}
+function totalAnswered(){return Object.values(U.days).reduce((a,d)=>a+(d.a||0),0);}
+function totalCorrect(){return Object.values(U.days).reduce((a,d)=>a+(d.c||0),0);}
+function seenCount(){return DATA.filter(q=>U.qs[q.id]&&U.qs[q.id].n).length;}
+function dueList(){return DATA.filter(q=>isDue(q.id));}
+function xpNeed(lv){return 25*(lv-1)*lv;}
+function levelInfo(xp){let lv=1;while(xp>=xpNeed(lv+1))lv++;const cur=xpNeed(lv),nxt=xpNeed(lv+1);return {lv,cur,nxt,pct:(xp-cur)/(nxt-cur),title:titleOf(lv)};}
+function titleOf(lv){return TITLES[Math.min(Math.floor((lv-1)/2),TITLES.length-1)];}
+function streakNow(){const s=U.streak;if(!s.last)return 0;const t=today();return (s.last===t||s.last===addDays(t,-1))?s.count:0;}
+function todayStat(){return U.days[today()]||{a:0,c:0,xp:0};}
+
+// 1問の解答結果を記録（間隔反復の更新）
+function recordAnswer(q,ok,{fill=false,lucky=false}={}){
+  const t=today();
+  const s=U.qs[q.id]||{box:0,n:0,c:0,w:0};
+  s.n++; s.last=t; s.lastOk=ok;
+  if(ok){ s.c++; s.box=lucky?Math.max(1,s.box):Math.min((s.box||0)+1,5); }
+  else { s.w++; s.box=1; }
+  s.due=addDays(t,INTERVALS[s.box]||1);
+  U.qs[q.id]=s;
+  const d=U.days[t]||{a:0,c:0,xp:0}; d.a++; if(ok)d.c++; U.days[t]=d;
+  if(U.streak.last!==t){ U.streak.count=(U.streak.last===addDays(t,-1))?U.streak.count+1:1; U.streak.last=t; }
+  if(ok&&fill) U.fillCorrect++;
+}
+// 「まぐれ」：直前の正解の箱上げを取り消して次回すぐ復習に回す
+function markLucky(q){
+  const s=U.qs[q.id]; if(!s)return;
+  s.box=Math.max(1,s.box-1); s.due=addDays(today(),1); s.lucky=(s.lucky||0)+1;
+}
+function addXP(n){
+  const before=levelInfo(U.xp).lv;
+  U.xp+=n; const t=today(); const d=U.days[t]||{a:0,c:0,xp:0}; d.xp=(d.xp||0)+n; U.days[t]=d;
+  const after=levelInfo(U.xp);
+  if(after.lv>before){ toast('🎉',`レベルアップ！ Lv.${after.lv}`,`称号「${after.title}」`); confetti(); sound('lvl'); }
+}
+
+/* ================= 実績 ================= */
+const BADGES=[
+  {id:'first',i:'🌱',n:'はじめの一歩',d:'初めて問題に解答する',t:()=>totalAnswered()>=1},
+  {id:'goal',i:'🎯',n:'今日の目標達成',d:'1日の目標問題数を達成する',t:()=>todayStat().a>=U.settings.goal},
+  {id:'combo5',i:'🔥',n:'5連続正解',d:'5問連続で正解する',t:()=>U.bestCombo>=5},
+  {id:'combo15',i:'⚡',n:'15連続正解',d:'15問連続で正解する',t:()=>U.bestCombo>=15},
+  {id:'combo30',i:'🌟',n:'30連続正解',d:'30問連続で正解する',t:()=>U.bestCombo>=30},
+  {id:'streak3',i:'📅',n:'三日坊主卒業',d:'3日連続で学習する',t:()=>U.streak.count>=3},
+  {id:'streak7',i:'🗓️',n:'1週間継続',d:'7日連続で学習する',t:()=>U.streak.count>=7},
+  {id:'streak30',i:'🏯',n:'30日継続',d:'30日連続で学習する',t:()=>U.streak.count>=30},
+  {id:'review',i:'🔁',n:'復習の達人',d:'「今日の復習」をやり切る',t:()=>!!U.flags.dueDone},
+  {id:'allseen',i:'🗺️',n:'全問踏破',d:`全${DATA.length}問に1回以上挑戦する`,t:()=>seenCount()>=DATA.length},
+  {id:'fill30',i:'✍️',n:'穴埋め職人',d:'穴埋め式で30問正解する',t:()=>U.fillCorrect>=30},
+  {id:'test',i:'📝',n:'模擬テスト受験',d:'模擬テストを最後まで解く',t:()=>U.sessions.some(s=>s.plan==='test')},
+  {id:'test90',i:'💯',n:'合格圏内',d:'模擬テストで90%以上を取る',t:()=>U.sessions.some(s=>s.plan==='test'&&s.correct/s.total>=.9)},
+  {id:'domain',i:'🏅',n:'領域制覇',d:'いずれかの領域の全問を「定着」以上にする',t:()=>DOMAINS.some(d=>DATA.filter(q=>q.domain===d).every(q=>(U.qs[q.id]?.box||0)>=3&&U.qs[q.id]?.n))},
+  {id:'lv5',i:'🎓',n:'レベル5',d:'レベル5に到達する',t:()=>levelInfo(U.xp).lv>=5},
+  {id:'lv10',i:'🏫',n:'レベル10',d:'レベル10に到達する',t:()=>levelInfo(U.xp).lv>=10},
+  {id:'master',i:'👑',n:'指導要領マスター',d:'全問を「習得」にする',t:()=>DATA.every(q=>(U.qs[q.id]?.box||0)>=5)},
+];
+function checkBadges(){
+  BADGES.forEach(b=>{
+    if(!U.badges[b.id]&&b.t()){ U.badges[b.id]=today(); toast(b.i,`実績解除：${b.n}`,b.d); sound('badge'); if(S) S.newBadges.push(b.id); }
   });
 }
 
-function buildQueue(){
-  queue=[...getFiltered()].sort(()=>Math.random()-.5);
-  current=0; answered=false; blankStates=[];
+/* ================= 演出 ================= */
+let actx=null;
+function sound(kind){
+  if(!U||!U.settings.sound)return;
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const seq={ok:[[660,.08],[880,.12]],ng:[[220,.18]],lvl:[[523,.1],[659,.1],[784,.1],[1047,.2]],badge:[[784,.1],[1175,.18]]}[kind]||[];
+    let t=actx.currentTime;
+    seq.forEach(([f,d])=>{const o=actx.createOscillator(),g=actx.createGain();o.type='sine';o.frequency.value=f;
+      g.gain.setValueAtTime(.12,t);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(actx.destination);o.start(t);o.stop(t+d);t+=d*.9;});
+  }catch(e){}
+}
+function toast(icon,title,body){
+  const el=document.createElement('div');el.className='toast';
+  el.innerHTML=`<span class="i">${icon}</span><span><b>${esc(title)}</b>${esc(body||'')}</span>`;
+  const box=$('toasts'); box.appendChild(el); while(box.children.length>3) box.firstChild.remove(); setTimeout(()=>el.remove(),3200);
+}
+function confetti(){
+  if(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+  const colors=['#1D9E75','#E0A548','#5B93D1','#E24B4A','#7A4FB5'];
+  for(let i=0;i<60;i++){const c=document.createElement('div');c.className='confetti';
+    c.style.left=Math.random()*100+'vw';c.style.background=colors[i%colors.length];
+    c.style.animationDuration=(1.6+Math.random()*1.6)+'s';c.style.animationDelay=(Math.random()*.4)+'s';
+    document.body.appendChild(c);setTimeout(()=>c.remove(),3800);}
+}
+function floatXP(n,el){
+  if(!el)return;const r=el.getBoundingClientRect();const f=document.createElement('div');f.className='float-xp';
+  f.textContent=`+${n} XP`;f.style.left=(r.left+r.width/2-24)+'px';f.style.top=(r.top-6)+'px';document.body.appendChild(f);setTimeout(()=>f.remove(),1000);
 }
 
-function setMode(m){
-  mode=m;
-  document.querySelectorAll('.mode-tab').forEach((t,i)=>{
-    t.classList.toggle('active',['choice','fill'][i]===m);
-  });
-  buildQueue(); render();
+/* ================= 画面制御 ================= */
+let view='home';
+let S=null;   // 実行中のセッション
+let freeFilter={domain:'all',grade:'all',status:'all'};
+let listFilter={domain:'all',status:'all',mask:true};
+
+function go(v){
+  if(S&&!S.done&&v!=='session'){ if(!confirm('学習を中断しますか？（ここまでの解答は記録されています）'))return; endTimer(); S=null; }
+  view=v; render(); window.scrollTo(0,0);
+}
+function render(){
+  const logged=!!U;
+  $('nav').classList.toggle('hidden',!logged||view==='session');
+  $('userChip').classList.toggle('hidden',!logged);
+  if(!logged){ $('hud').innerHTML=''; renderWelcome(); return; }
+  renderChip(); renderHud();
+  document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('active',b.dataset.v===view));
+  ({home:renderHome,stats:renderStats,list:renderList,badges:renderBadges,profile:renderProfile,session:renderSession,result:renderResult}[view]||renderHome)();
+}
+function renderChip(){
+  const u=me(),li=levelInfo(U.xp);
+  $('userChip').innerHTML=`<span class="av">${esc(u.avatar)}</span><span class="nm">${esc(u.name)}</span><span class="lv">Lv.${li.lv}</span>`;
+}
+function ringSVG(p){
+  const r=14,c=2*Math.PI*r,v=Math.min(1,p);
+  return `<svg class="ring" viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="${r}" fill="none" stroke="var(--surface2)" stroke-width="4"/>
+  <circle cx="17" cy="17" r="${r}" fill="none" stroke="${v>=1?'var(--green)':'var(--amber)'}" stroke-width="4" stroke-linecap="round" stroke-dasharray="${c*v} ${c}" transform="rotate(-90 17 17)"/></svg>`;
+}
+function renderHud(){
+  const li=levelInfo(U.xp),st=streakNow(),td=todayStat(),goal=U.settings.goal;
+  $('hud').innerHTML=`<div class="hud">
+    <div class="xpbox"><div class="xp-meta"><span><b>Lv.${li.lv}</b> ${esc(li.title)}</span><span>${U.xp-li.cur} / ${li.nxt-li.cur} XP</span></div>
+      <div class="bar"><div class="bar-fill" style="width:${Math.round(li.pct*100)}%"></div></div></div>
+    <div class="hud-pill ${st?'':'off'}" title="連続学習日数">🔥 <b>${st}</b>日</div>
+    <div class="hud-pill ring-pill" title="今日の目標">${ringSVG(td.a/goal)}<span>今日 <b>${td.a}</b>/${goal}問</span></div>
+  </div>`;
 }
 
-function onFilter(){
-  filterDomain=document.getElementById('filterDomain').value;
-  filterGrade=document.getElementById('filterGrade').value;
-  wrongOnly=document.getElementById('wrongOnly').checked;
-  buildQueue(); render();
+/* ----- ようこそ／ユーザー登録 ----- */
+let regAvatar=AVATARS[0];
+function renderWelcome(){
+  const has=users.length>0;
+  $('main').innerHTML=`
+  <div class="card welcome">
+    <div class="big">📚</div>
+    <h2 style="justify-content:center;font-size:17px">ようこそ！</h2>
+    <p class="muted">学習者を登録すると、解答履歴・レベル・実績がこの端末に保存され、<br>忘れかけた問題を自動で出題する「間隔反復」で効率よく覚えられます。</p>
+  </div>
+  ${has?`<div class="card"><h2>👤 登録済みの学習者</h2><div class="user-list">${users.map(u=>`
+    <div class="user-item"><span class="av">${esc(u.avatar)}</span><span>${esc(u.name)}</span>
+    <button class="btn btn-sm btn-primary spacer" onclick="switchUser('${u.id}')">この学習者で始める</button></div>`).join('')}</div></div>`:''}
+  ${registerForm()}
+  ${storageOK?'':'<p class="notice">⚠ この環境ではブラウザの保存領域が使えないため、ページを閉じると記録が消えます。</p>'}`;
 }
-
-function updateStats(){
-  const el=document.getElementById('statsRow');
-  const wn=wrongIds.size;
-  el.innerHTML=`
-    <div class="stat-chip">正解 <strong>${correctIds.size}</strong></div>
-    <div class="stat-chip">不正解 <strong>${wrongIds.size}</strong></div>
-    <div class="stat-chip">全問 <strong>${DATA.length}</strong></div>
-    ${wn>0?`<div class="stat-chip warn">要復習 <strong>${wn}</strong>問</div>`:''}
-  `;
+function registerForm(){
+  return `<div class="card"><h2>✨ 新しく学習者を登録</h2>
+    <div class="form-row"><label for="regName">ニックネーム（20文字まで）</label><input type="text" id="regName" maxlength="20" placeholder="例：さくら" style="width:100%"></div>
+    <div class="form-row"><label>アイコン</label><div class="avatars" id="avatars">${AVATARS.map(a=>`<button type="button" class="${a===regAvatar?'sel':''}" onclick="pickAvatar(this,'${a}')">${a}</button>`).join('')}</div></div>
+    <div class="form-row"><label for="regGoal">1日の目標問題数</label>
+      <select id="regGoal">${[5,10,15,20,30].map(n=>`<option value="${n}" ${n===10?'selected':''}>${n}問</option>`).join('')}</select></div>
+    <button class="btn btn-primary" onclick="register()">登録して始める</button>
+    <p class="hint" style="margin-top:.75rem">記録はこの端末のブラウザ内に保存されます（サーバーには送信されません）。別の端末へ移すときは「プロフィール」の書き出し／読み込みを使ってください。</p>
+  </div>`;
 }
-
-function updateProgress(){
-  const total=queue.length;
-  const pct=total?Math.round((current/total)*100):0;
-  document.getElementById('progressFill').style.width=pct+'%';
-  document.getElementById('progressLabel').textContent=`${current} / ${total}`;
-  document.getElementById('progressPct').textContent=pct+'%';
+function pickAvatar(btn,a){regAvatar=a;document.querySelectorAll('#avatars button').forEach(b=>b.classList.toggle('sel',b===btn));}
+function register(){
+  const name=$('regName').value.trim();
+  if(!name){$('regName').focus();$('regName').classList.add('shake');setTimeout(()=>$('regName').classList.remove('shake'),400);return;}
+  const id='u'+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+  users.push({id,name,avatar:regAvatar,created:today()}); store.set('users',users);
+  loadUser(id); U.settings.goal=+$('regGoal').value; save();
+  toast(regAvatar,`ようこそ、${name}さん！`,'まずは「おまかせ10問」から始めてみましょう');
+  view='home'; render();
 }
+function switchUser(id){ loadUser(id); view='home'; render(); }
 
-function renderQText(q, blanks, revealed){
-  let t=q.question;
-  q.blanks.forEach((ans,i)=>{
-    const ph=`【${'①②③'[i]}】`;
-    if(revealed){
-      t=t.replace(ph,`<span class="blank-token revealed">${ans}</span>`);
-    } else {
-      t=t.replace(ph,`<span class="blank-token">&nbsp;${'①②③'[i]}&nbsp;</span>`);
+/* ----- ホーム ----- */
+function renderHome(){
+  const due=dueList().length, unseen=DATA.length-seenCount();
+  const weak=DATA.filter(q=>U.qs[q.id]&&U.qs[q.id].lastOk===false).length;
+  const fmt=U.settings.format, td=todayStat();
+  const counts=masteryCounts(DATA);
+  $('main').innerHTML=`
+  <div class="format-switch" role="tablist" aria-label="解答形式">
+    <button class="${fmt==='choice'?'active':''}" onclick="setFormat('choice')">▤ 選択式</button>
+    <button class="${fmt==='fill'?'active':''}" onclick="setFormat('fill')">✎ 穴埋め式（XP×1.5）</button>
+  </div>
+  <div class="plans">
+    ${due?`<button class="plan hero" onclick="startPlan('due')"><span class="ic">🔁</span><span class="t">今日の復習 <span class="cnt">${due}問</span></span>
+      <span class="d">忘れかけたタイミングの問題です。思い出す練習が記憶を最も強くします。</span></button>`
+     :`<button class="plan hero" onclick="startPlan('quick')"><span class="ic">✨</span><span class="t">おまかせ10問</span>
+      <span class="d">${seenCount()?'今日の復習はすべて完了！ 未学習・苦手な問題を中心に出題します。':'未学習の問題から10問を出題します。まずはここから！'}</span></button>`}
+    ${due?`<button class="plan" onclick="startPlan('quick')"><span class="ic">✨</span><span class="t">おまかせ10問</span><span class="d">復習・未学習・苦手をバランスよく</span></button>`:''}
+    <button class="plan" onclick="startPlan('new')" ${unseen?'':'disabled'}><span class="ic">🌱</span><span class="t">新しい問題 <span class="cnt">${unseen}問</span></span><span class="d">まだ解いていない問題に挑戦</span></button>
+    <button class="plan" onclick="startPlan('weak')" ${weak?'':'disabled'}><span class="ic">🎯</span><span class="t">苦手克服 <span class="cnt">${weak}問</span></span><span class="d">直近で間違えた問題を集中練習</span></button>
+    <button class="plan" onclick="startPlan('test')"><span class="ic">📝</span><span class="t">模擬テスト</span><span class="d">${TEST_SIZE}問・時間計測・解答は最後に表示</span></button>
+    <button class="plan" onclick="toggleFree()"><span class="ic">🧭</span><span class="t">自由演習</span><span class="d">領域・学年・習熟度で絞り込み</span></button>
+  </div>
+  <div class="card hidden" id="freeBox" style="margin-top:1rem">
+    <h2>🧭 自由演習</h2>
+    <div class="filters">
+      <select id="fDomain" onchange="freeFilter.domain=this.value;updFreeCount()"><option value="all">すべての領域</option>${DOMAINS.map(d=>`<option ${freeFilter.domain===d?'selected':''}>${d}</option>`).join('')}</select>
+      <select id="fGrade" onchange="freeFilter.grade=this.value;updFreeCount()"><option value="all">すべての学年</option>${GRADES.map(g=>`<option ${freeFilter.grade===g?'selected':''}>${g}</option>`).join('')}</select>
+      <select id="fStatus" onchange="freeFilter.status=this.value;updFreeCount()">
+        ${[['all','すべての習熟度'],['review','要復習'],['new','未学習'],['learning','学習中'],['solid','定着'],['master','習得']].map(([v,l])=>`<option value="${v}" ${freeFilter.status===v?'selected':''}>${l}</option>`).join('')}</select>
+    </div>
+    <div class="row"><button class="btn btn-primary" id="freeStart" onclick="startPlan('free')">開始</button><span class="muted" id="freeCount"></span></div>
+  </div>
+  <div class="card" style="margin-top:1rem">
+    <h2>📈 習熟度 <span class="sub">${seenCount()} / ${DATA.length}問に挑戦済み</span></h2>
+    ${masteryBar(counts)}${legend(counts)}
+    <p class="hint" style="margin-top:.6rem">正解するたびに問題の「箱」が上がり、復習間隔が 1→3→7→14→30日 と伸びます。間違えると1日後に戻ります。</p>
+  </div>
+  <div class="card"><h2>💡 効果的な使い方</h2>
+    <ul class="muted" style="padding-left:1.2em;line-height:1.9">
+      <li>毎日少しずつ：「今日の復習」を先に片づけ、時間があれば新しい問題へ（分散学習）。</li>
+      <li>慣れてきたら<b>穴埋め式</b>へ：選ぶより思い出して書く方が記憶に残ります（想起練習）。</li>
+      <li>正解でも自信がなければ「まぐれ」ボタンで復習に回しましょう。</li>
+      <li>解答後に表示される<b>本文</b>を声に出して読むと、前後の文脈ごと覚えられます。</li>
+    </ul></div>`;
+}
+function setFormat(f){U.settings.format=f;save();renderHome();}
+function toggleFree(){const b=$('freeBox');b.classList.toggle('hidden');if(!b.classList.contains('hidden')){updFreeCount();b.scrollIntoView({behavior:'smooth',block:'nearest'});}}
+function freeList(){
+  return DATA.filter(q=>(freeFilter.domain==='all'||q.domain===freeFilter.domain)&&(freeFilter.grade==='all'||q.grade===freeFilter.grade)
+    &&(freeFilter.status==='all'||(freeFilter.status==='review'?needsReview(q.id):status(q.id)===freeFilter.status)));
+}
+function updFreeCount(){const n=freeList().length;$('freeCount').textContent=`${n}問`;$('freeStart').disabled=!n;}
+function masteryCounts(list){const c={new:0,learning:0,solid:0,master:0};list.forEach(q=>c[status(q.id)]++);return c;}
+function masteryBar(c){const t=c.new+c.learning+c.solid+c.master||1;
+  return `<div class="mastery" role="img" aria-label="習得${c.master} 定着${c.solid} 学習中${c.learning} 未学習${c.new}">${['master','solid','learning','new'].map(k=>`<span class="m-${k}" style="width:${c[k]/t*100}%"></span>`).join('')}</div>`;}
+function legend(c){return `<div class="legend">${['master','solid','learning','new'].map(k=>`<span><i class="m-${k}"></i>${STATUS_LABEL[k]} ${c[k]}</span>`).join('')}</div>`;}
+
+/* ----- セッション ----- */
+function buildQueue(plan,ids){
+  const acc=q=>{const s=U.qs[q.id];return s&&s.n?s.c/(s.c+s.w):1;};
+  switch(plan){
+    case 'due': return shuffle(dueList());
+    case 'new': return shuffle(DATA.filter(q=>status(q.id)==='new')).slice(0,QUICK_SIZE);
+    case 'weak': return shuffle(DATA.filter(q=>U.qs[q.id]&&U.qs[q.id].lastOk===false).sort((a,b)=>acc(a)-acc(b)).slice(0,WEAK_SIZE));
+    case 'test': return shuffle(DATA).slice(0,TEST_SIZE);
+    case 'free': return shuffle(freeList());
+    case 'ids': return shuffle(DATA.filter(q=>ids.includes(q.id)));
+    case 'quick': default: {
+      const due=shuffle(dueList()), fresh=shuffle(DATA.filter(q=>status(q.id)==='new'));
+      const rest=DATA.filter(q=>!due.includes(q)&&!fresh.includes(q)).sort((a,b)=>acc(a)-acc(b)||((U.qs[a.id]?.box||0)-(U.qs[b.id]?.box||0)));
+      const pick=[...due.slice(0,5)];
+      for(const q of [...fresh,...due.slice(5),...rest]){ if(pick.length>=QUICK_SIZE)break; if(!pick.includes(q))pick.push(q); }
+      return shuffle(pick);
     }
+  }
+}
+const PLAN_NAME={due:'今日の復習',quick:'おまかせ10問',new:'新しい問題',weak:'苦手克服',test:'模擬テスト',free:'自由演習',ids:'間違えた問題の復習'};
+function startPlan(plan,ids){
+  const queue=buildQueue(plan,ids);
+  if(!queue.length){toast('📭','出題できる問題がありません','条件を変えてください');return;}
+  S={plan,format:U.settings.format,queue,idx:0,results:[],start:Date.now(),combo:0,maxCombo:0,xp:0,
+     requeued:new Set(),newBadges:[],startLv:levelInfo(U.xp).lv,test:plan==='test',done:false,answered:false,blank:[],hinted:false};
+  view='session'; startTimer(); render(); window.scrollTo(0,0);
+}
+let timerId=null;
+function startTimer(){endTimer();timerId=setInterval(()=>{const el=$('timer');if(el&&S)el.textContent=fmtTime((Date.now()-S.start)/1000);},1000);}
+function endTimer(){if(timerId)clearInterval(timerId);timerId=null;}
+
+function qHTML(q,mode){ // mode: 'blank' | 'reveal' | states array
+  let t=esc(q.question);
+  q.blanks.forEach((ans,i)=>{
+    const ph=`【${MARKS[i]}】`;
+    let rep;
+    if(mode==='blank') rep=`<span class="blank-token">&nbsp;${MARKS[i]}&nbsp;</span>`;
+    else { const cls=Array.isArray(mode)?(mode[i]?'ok':'ng'):''; rep=`<span class="blank-token ${cls}">${esc(ans)}</span>`; }
+    t=t.split(ph).join(rep);
   });
   return t;
 }
-
-function renderQ(){
-  updateProgress();
-  if(!queue.length){
-    document.getElementById('mainArea').innerHTML=`<div class="empty"><div class="empty-icon">📭</div><p>条件に合う問題がありません。<br>フィルターを変更してください。</p></div>`;
-    return;
-  }
-  if(current>=queue.length){ renderResult(); return; }
-
-  const q=queue[current];
-  answered=false;
-  blankStates=q.blanks.map(()=>null);
-  const isWrong=wrongIds.has(q.id);
-
-  let body=`<div class="card">
-    <div class="badge-row">
-      <span class="badge">${q.section}</span>
-      <span class="badge">${q.grade}</span>
-      ${isWrong?'<span class="badge review">要復習</span>':''}
+function renderSession(){
+  if(!S){go('home');return;}
+  if(S.idx>=S.queue.length){finishSession();return;}
+  const q=S.queue[S.idx]; S.answered=false; S.hinted=false; S.blank=q.blanks.map(()=>null); S.picked=q.blanks.map(()=>null);
+  const st=status(q.id), retry=S.results.some(r=>r.id===q.id);
+  const pct=Math.round(S.idx/S.queue.length*100);
+  let h=`<div class="session-top">
+      <button class="btn btn-sm" onclick="go('home')">✕ 中断</button>
+      <span>${PLAN_NAME[S.plan]}・${S.format==='fill'?'穴埋め式':'選択式'}</span>
+      <span class="spacer combo" id="combo">${S.combo>=2&&!S.test?`🔥 ${S.combo}コンボ`:''}</span>
+      <span class="timer" id="timer">${fmtTime((Date.now()-S.start)/1000)}</span>
     </div>
-    <div class="q-text" id="qtext">${renderQText(q,blankStates,false)}</div>`;
-
-  if(mode==='choice'){
+    <div class="bar" style="margin-bottom:1rem"><div class="bar-fill" style="width:${pct}%"></div></div>
+    <div class="card" id="qcard">
+    <div class="badge-row">
+      <span class="pill">${esc(q.domain)}</span><span class="pill">${esc(q.grade)}</span>
+      <span class="pill ${st}">${STATUS_LABEL[st]}</span>
+      ${retry?'<span class="pill review">もう一度</span>':''}
+    </div>
+    <div class="q-text" id="qtext">${qHTML(q,'blank')}</div>`;
+  if(S.format==='choice'){
     q.blanks.forEach((ans,bi)=>{
-      const shuffled=[...q.choices[bi]].sort(()=>Math.random()-.5);
-      if(q.blanks.length>1) body+=`<div class="blank-label">空欄【${'①②③'[bi]}】を選んでください</div>`;
-      body+=`<div class="choices-grid" id="cg${bi}">`;
-      shuffled.forEach(c=>{
-        body+=`<button class="choice-btn" onclick="pickChoice(${bi},'${c.replace(/'/g,"\\'")}')" data-val="${c.replace(/"/g,'&quot;')}">${c}</button>`;
-      });
-      body+=`</div>`;
+      const order=shuffle(q.choices[bi].map((c,ci)=>ci));
+      if(q.blanks.length>1) h+=`<div class="blank-label">空欄【${MARKS[bi]}】</div>`;
+      h+=`<div class="choices-grid" id="cg${bi}">${order.map((ci,k)=>`<button class="choice-btn" data-bi="${bi}" data-ci="${ci}" onclick="pickChoice(${bi},${ci})"><span class="key">${k+1}</span><span>${esc(q.choices[bi][ci])}</span></button>`).join('')}</div>`;
     });
   } else {
     q.blanks.forEach((ans,bi)=>{
-      body+=`<div class="fill-row">
-        ${q.blanks.length>1?`<span class="fill-idx">【${'①②③'[bi]}】</span>`:''}
-        <input class="fill-input" id="fi${bi}" type="text" placeholder="答えを入力してください"
-          onkeydown="fillKey(event,${bi},${q.blanks.length})">
-      </div>`;
+      h+=`<div class="fill-row">${q.blanks.length>1?`<span class="fill-idx">【${MARKS[bi]}】</span>`:''}
+        <input class="fill-input" id="fi${bi}" type="text" autocomplete="off" placeholder="答えを入力" onkeydown="fillKey(event,${bi},${q.blanks.length})"></div>`;
     });
+    h+=`<div id="hintArea"></div>`;
   }
-
-  body+=`<div id="fbArea"></div>
-    <div class="action-row">
-      ${mode==='fill'?`<button class="btn btn-primary" id="checkBtn" onclick="checkFill()">確認する</button>`:''}
-      <button class="btn" id="nextBtn" onclick="nextQ()">${current===0&&!answered?'スキップ →':'スキップ →'}</button>
-      <span class="counter">${current+1} / ${queue.length}</span>
+  h+=`<div id="fbArea" aria-live="polite"></div>
+    <div class="action-row" id="actRow">
+      ${S.format==='fill'?`<button class="btn btn-primary" id="checkBtn" onclick="checkFill()">確認する</button>${S.test?'':'<button class="btn" id="hintBtn" onclick="showHint()">ヒント</button>'}`:''}
+      <button class="btn" id="nextBtn" onclick="skipQ()">わからない</button>
+      <span class="counter">${S.idx+1} / ${S.queue.length}</span>
     </div>
+    <p class="kbd-hint">${S.format==='choice'?'キーボード：1〜3で選択、Enterで次へ':'Enterで次の空欄／確認、確認後Enterで次へ'}</p>
   </div>`;
-
-  document.getElementById('mainArea').innerHTML=body;
-  if(mode==='fill'){
-    setTimeout(()=>{ const f=document.getElementById('fi0'); if(f) f.focus(); },30);
-  }
+  $('main').innerHTML=h;
+  if(S.format==='fill') setTimeout(()=>{const f=$('fi0');if(f)f.focus();},30);
 }
-
-function pickChoice(bi, val){
-  if(answered&&blankStates[bi]!==null) return;
-  const q=queue[current];
-  const ok=(val===q.blanks[bi]);
-  blankStates[bi]=ok;
-  const grid=document.getElementById('cg'+bi);
-  grid.querySelectorAll('.choice-btn').forEach(b=>{
-    b.disabled=true;
-    if(b.dataset.val===q.blanks[bi]) b.classList.add('reveal-ans');
-    if(b.dataset.val===val && !ok) b.classList.add('ng');
-    if(b.dataset.val===val && ok) b.classList.add('ok');
+function showHint(){
+  // 選択肢を提示（ヒントを使うと取得XPは選択式と同じになる）
+  const q=S.queue[S.idx]; if(S.answered)return; S.hinted=true;
+  $('hintArea').innerHTML=`<div class="hint-box">ヒント（候補）：${q.blanks.map((a,i)=>`${q.blanks.length>1?`【${MARKS[i]}】`:''}${shuffle(q.choices[i]).map(esc).join(' ／ ')}`).join('<br>')}</div>`;
+  $('hintBtn').disabled=true;
+}
+function pickChoice(bi,ci){
+  if(S.answered||S.blank[bi]!==null)return;
+  const q=S.queue[S.idx]; const val=q.choices[bi][ci]; const ok=val===q.blanks[bi];
+  S.blank[bi]=ok; S.picked[bi]=val;
+  $('cg'+bi).querySelectorAll('.choice-btn').forEach(b=>{
+    b.disabled=true; const v=q.choices[bi][+b.dataset.ci];
+    if(S.test){ if(+b.dataset.ci===ci) b.classList.add('picked'); return; }
+    if(v===q.blanks[bi]) b.classList.add('reveal-ans');
+    if(+b.dataset.ci===ci) b.classList.add(ok?'ok':'ng');
   });
-  if(blankStates.every(s=>s!==null)){
-    finalize();
-  }
+  if(S.blank.every(s=>s!==null)) finalize();
 }
-
 function fillKey(e,idx,total){
-  if(e.key==='Enter'){
-    if(idx<total-1){ const n=document.getElementById('fi'+(idx+1)); if(n) n.focus(); }
-    else checkFill();
-  }
+  if(e.key!=='Enter'||e.isComposing)return;
+  e.preventDefault(); e.stopPropagation();
+  if(idx<total-1){const n=$('fi'+(idx+1));if(n)n.focus();} else checkFill();
 }
-
 function checkFill(){
-  if(answered) return;
-  const q=queue[current];
-  let allOk=true;
+  if(S.answered)return;
+  const q=S.queue[S.idx];
   q.blanks.forEach((ans,i)=>{
-    const inp=document.getElementById('fi'+i);
-    if(!inp) return;
-    const ok=(inp.value.trim()===ans);
-    blankStates[i]=ok;
-    inp.disabled=true;
+    const inp=$('fi'+i); const v=norm(inp.value), a=norm(ans);
+    const ok=v===a; S.blank[i]=ok; S.picked[i]=inp.value.trim(); inp.disabled=true;
+    if(S.test) return;
     inp.classList.add(ok?'ok':'ng');
-    if(!ok){
-      allOk=false;
-      const hint=document.createElement('div');
-      hint.className='fill-hint';
-      hint.textContent='正解: '+ans;
-      inp.parentNode.after(hint);
-    }
+    if(!ok){const hint=document.createElement('div');hint.className='fill-hint';
+      const close=v&&a.length>=3&&lev(v,a)<=1;
+      hint.textContent=(close?'惜しい！ ':'')+'正解: '+ans; inp.parentNode.after(hint);}
   });
-  const cb=document.getElementById('checkBtn');
-  if(cb) cb.style.display='none';
+  const cb=$('checkBtn'); if(cb)cb.remove(); const hb=$('hintBtn'); if(hb)hb.remove();
   finalize();
 }
-
+function skipQ(){
+  if(S.answered){nextQ();return;}
+  const q=S.queue[S.idx]; S.blank=q.blanks.map(()=>false); S.skipped=true;
+  if(S.format==='choice') q.blanks.forEach((a,bi)=>$('cg'+bi).querySelectorAll('.choice-btn').forEach(b=>{b.disabled=true;if(!S.test&&q.choices[bi][+b.dataset.ci]===a)b.classList.add('reveal-ans');}));
+  else q.blanks.forEach((a,i)=>{const inp=$('fi'+i);inp.disabled=true;});
+  const cb=$('checkBtn'); if(cb)cb.remove(); const hb=$('hintBtn'); if(hb)hb.remove();
+  finalize();
+}
 function finalize(){
-  answered=true;
-  const q=queue[current];
-  const allOk=blankStates.every(s=>s===true);
-  answeredIds.add(q.id);
-  if(allOk){ correctIds.add(q.id); wrongIds.delete(q.id); }
-  else { wrongIds.add(q.id); correctIds.delete(q.id); }
+  S.answered=true;
+  const q=S.queue[S.idx]; const ok=S.blank.every(s=>s===true);
+  const isRetry=S.results.some(r=>r.id===q.id);
+  const fill=S.format==='fill'&&!S.hinted;
+  // 再挑戦（同セッション内のやり直し）は記録・XPを控えめに
+  if(!isRetry) recordAnswer(q,ok,{fill});
+  let xp=0;
+  if(ok){ S.combo++; S.maxCombo=Math.max(S.maxCombo,S.combo); U.bestCombo=Math.max(U.bestCombo,S.combo);
+    xp=isRetry?3:Math.round((10+Math.min(S.combo-1,5)*2)*(fill?1.5:1)); }
+  else { S.combo=0; xp=isRetry?0:2; }
+  S.results.push({id:q.id,ok,retry:isRetry,picked:[...S.picked]});
+  // 間違えた問題はセッションの最後にもう一度（テスト以外）
+  if(!ok&&!S.test&&!S.requeued.has(q.id)){ S.requeued.add(q.id); S.queue.push(q); }
+  S.skipped=false;
+  if(xp){ S.xp+=xp; addXP(xp); }
+  const t=today(), d=U.days[t];
+  if(d&&d.a>=U.settings.goal&&!d.goalBonus){ d.goalBonus=true; addXP(30); S.xp+=30; toast('🎯','今日の目標を達成！','ボーナス +30 XP'); confetti(); }
+  checkBadges(); save(); renderHud(); renderChip();
 
-  const fb=document.getElementById('fbArea');
-  if(allOk){
-    fb.innerHTML=`<div class="feedback ok"><span class="feedback-icon">✓</span><span>正解！</span></div>`;
-  } else {
-    const ans=q.blanks.join('　/　');
-    fb.innerHTML=`<div class="feedback ng"><span class="feedback-icon">✗</span><span>不正解。正解：${ans}</span></div>`;
-  }
-  const nb=document.getElementById('nextBtn');
-  if(nb) nb.textContent='次の問題 →';
-  updateStats();
+  const nb=$('nextBtn'); nb.textContent=S.idx+1>=S.queue.length?'結果を見る →':'次の問題 →'; nb.classList.add('btn-primary');
+  if(S.test){ setTimeout(()=>{ if(S&&S.answered&&S.queue[S.idx]===q) nextQ(); },250); return; }
+  sound(ok?'ok':'ng');
+  const cmb=$('combo'); if(cmb){cmb.textContent=S.combo>=2?`🔥 ${S.combo}コンボ`:''; if(S.combo>=2){cmb.classList.add('pop');setTimeout(()=>cmb.classList.remove('pop'),200);}}
+  if(!ok) $('qcard').classList.add('shake');
+  $('qtext').innerHTML=qHTML(q,S.blank);
+  const note=U.notes[q.id]||'';
+  $('fbArea').innerHTML=`
+    <div class="feedback ${ok?'ok':'ng'}"><span>${ok?'✓ 正解！':'✗ 不正解'}${!ok?`　正解：${q.blanks.map(esc).join('　/　')}`:''}${!ok&&!isRetry?'<br><small>この問題はセッションの最後にもう一度出題します。</small>':''}</span>
+      ${xp?`<span class="xp" id="xpGain">+${xp} XP</span>`:''}</div>
+    <div class="explain">${qHTML(q,'reveal')}<span class="src">出典区分：${esc(q.section)}（${esc(q.grade)}）</span></div>
+    ${ok&&!isRetry?`<div style="margin:-.4rem 0 1rem"><button class="btn-link" id="luckyBtn" onclick="lucky(${q.id})">🤔 まぐれだった（自信がないので早めに復習する）</button></div>`:''}
+    <details class="note" ${note?'open':''}><summary>📝 自分用メモ（語呂合わせ・覚え方など）</summary>
+      <textarea id="noteTa" placeholder="例：「感じる→気付く→認識する」と学年が上がるにつれて深まる" oninput="saveNote(${q.id},this.value)">${esc(note)}</textarea></details>`;
+  if(xp) floatXP(xp,$('xpGain'));
+  nb.focus({preventScroll:true});
 }
+function lucky(id){const q=DATA.find(x=>x.id===id);markLucky(q);save();const b=$('luckyBtn');b.textContent='✓ 早めに復習するよう設定しました';b.disabled=true;}
+let noteTimer=null;
+function saveNote(id,v){U.notes[id]=v;if(!v)delete U.notes[id];clearTimeout(noteTimer);noteTimer=setTimeout(save,300);}
+function nextQ(){S.idx++;renderSession();window.scrollTo({top:0});}
 
-function nextQ(){
-  current++;
-  renderQ();
+function finishSession(){
+  endTimer();
+  const first=S.results.filter(r=>!r.retry);
+  const correct=first.filter(r=>r.ok).length, total=first.length;
+  const sec=(Date.now()-S.start)/1000;
+  if(S.plan==='due'&&dueList().length===0) U.flags.dueDone=true;
+  U.sessions.unshift({date:today(),plan:S.plan,format:S.format,total,correct,xp:S.xp,sec:Math.round(sec)});
+  U.sessions=U.sessions.slice(0,200);
+  checkBadges(); save();
+  S.done=true; S.summary={correct,total,sec};
+  if(total&&correct===total) confetti();
+  view='result'; render();
 }
-
 function renderResult(){
-  updateProgress();
-  const total=queue.length;
-  const corr=queue.filter(q=>correctIds.has(q.id)).length;
-  const pct=Math.round((corr/total)*100);
-  const wr=wrongIds.size;
-  document.getElementById('mainArea').innerHTML=`
-    <div class="result-card">
-      <p style="font-size:13px;color:var(--text-muted);margin-bottom:.75rem">セッション完了</p>
-      <div class="result-score">${pct}<span>%</span></div>
-      <div class="result-label">${total}問中 ${corr}問正解</div>
-      ${wr>0
-        ?`<div class="result-warn">要復習の問題が <strong>${wr}問</strong> あります</div>`
-        :`<p style="font-size:14px;color:var(--green-dark);margin-bottom:1.5rem">全問クリア！</p>`
-      }
-      <div class="result-actions">
-        ${wr>0?`<button class="btn btn-primary" onclick="retryWrong()">間違えた問題を復習</button>`:''}
-        <button class="btn" onclick="retryAll()">もう一度（全問）</button>
-      </div>
-    </div>`;
+  if(!S||!S.summary){go('home');return;}
+  const {correct,total,sec}=S.summary, pct=total?Math.round(correct/total*100):0;
+  const wrongIds=[...new Set(S.results.filter(r=>!r.retry&&!r.ok).map(r=>r.id))];
+  const msg=pct===100?'パーフェクト！ 🎉':pct>=80?'すばらしい！ この調子で 👏':pct>=60?'あと一歩！ 間違えた問題を見直そう':'まずは本文を読んで、もう一度挑戦しよう 💪';
+  const li=levelInfo(U.xp);
+  const first=S.results.filter(r=>!r.retry);
+  $('main').innerHTML=`
+  <div class="card result-card">
+    <p class="muted" style="margin-bottom:.6rem">${PLAN_NAME[S.plan]} 完了</p>
+    <div class="result-score">${pct}<span>%</span></div>
+    <div class="result-label">${total}問中 ${correct}問正解（初回解答）<br>${msg}</div>
+    <div class="result-tiles">
+      <div class="tile"><div class="v">+${S.xp}</div><div class="k">獲得XP</div></div>
+      <div class="tile"><div class="v">${S.maxCombo}</div><div class="k">最大コンボ</div></div>
+      <div class="tile"><div class="v">${fmtTime(sec)}</div><div class="k">所要時間</div></div>
+    </div>
+    ${li.lv>S.startLv?`<p style="margin-bottom:1rem">🎉 <b>Lv.${S.startLv} → Lv.${li.lv}</b>　称号「${esc(li.title)}」</p>`:''}
+    ${S.newBadges.length?`<p style="margin-bottom:1rem">🏆 新しい実績：${S.newBadges.map(id=>{const b=BADGES.find(x=>x.id===id);return `${b.i} ${esc(b.n)}`;}).join('、')}</p>`:''}
+    <div class="row" style="justify-content:center">
+      ${wrongIds.length?`<button class="btn btn-primary" onclick="S=null;startPlan('ids',[${wrongIds.join(',')}])">間違えた${wrongIds.length}問をもう一度</button>`:''}
+      <button class="btn" onclick="S=null;go('home')">ホームへ</button>
+    </div>
+  </div>
+  <div class="card"><h2>📋 解答の振り返り</h2><div class="review-list">
+    ${first.map(r=>{const q=DATA.find(x=>x.id===r.id);return `<div class="review-item"><span class="mk ${r.ok?'ok':'ng'}">${r.ok?'○':'×'}</span>
+      <div><div>${qHTML(q,q.blanks.map((a,i)=>r.ok||r.picked[i]===a))}</div>
+      ${!r.ok&&r.picked.some(p=>p)?`<div class="hint">あなたの解答：${r.picked.map(p=>esc(p||'（未回答）')).join(' / ')}</div>`:''}</div></div>`;}).join('')}
+  </div></div>`;
 }
 
-function retryWrong(){
-  document.getElementById('wrongOnly').checked=true;
-  wrongOnly=true; buildQueue(); render();
-}
-function retryAll(){
-  document.getElementById('wrongOnly').checked=false;
-  wrongOnly=false; buildQueue(); render();
+/* ----- 記録 ----- */
+function renderStats(){
+  const ans=totalAnswered(), cor=totalCorrect();
+  const days=Object.keys(U.days).filter(k=>U.days[k].a>0).length;
+  // ヒートマップ（直近16週）
+  const t=today(); const end=new Date(); const startD=new Date(end.getFullYear(),end.getMonth(),end.getDate()-(15*7+end.getDay()));
+  let cells=''; for(let i=0;i<16*7;i++){const k=dkey(new Date(startD.getFullYear(),startD.getMonth(),startD.getDate()+i));
+    const a=U.days[k]?.a||0; const lv=a===0?0:a<5?1:a<10?2:a<20?3:4; cells+=k>t?'<i class="future"></i>':`<i class="l${lv}" title="${k}：${a}問"></i>`;}
+  // 直近7日
+  const last7=[...Array(7)].map((_,i)=>addDays(t,i-6)); const max7=Math.max(1,...last7.map(k=>U.days[k]?.a||0));
+  $('main').innerHTML=`
+  <div class="stat-tiles">
+    <div class="tile"><div class="v">${ans}</div><div class="k">総解答数</div></div>
+    <div class="tile"><div class="v">${ans?Math.round(cor/ans*100):0}%</div><div class="k">正答率</div></div>
+    <div class="tile"><div class="v">${days}</div><div class="k">学習日数</div></div>
+    <div class="tile"><div class="v">${U.bestCombo}</div><div class="k">最大コンボ</div></div>
+  </div>
+  <div class="card"><h2>🗓️ 学習カレンダー <span class="sub">直近16週</span></h2>
+    <div class="heat-wrap"><div class="heat">${cells}</div></div>
+    <div class="legend"><span>少</span><span><i style="background:var(--heat0)"></i><i style="background:var(--heat1)"></i><i style="background:var(--heat2)"></i><i style="background:var(--heat3)"></i><i style="background:var(--heat4)"></i></span><span>多</span>
+    <span class="spacer">連続 ${streakNow()}日 ／ 最長は実績で確認</span></div></div>
+  <div class="card"><h2>📅 直近7日の解答数</h2>
+    <div style="display:flex;gap:6px;align-items:flex-end;height:110px">
+      ${last7.map(k=>{const d=U.days[k]||{a:0,c:0};const h=d.a/max7*80;const hc=d.c/max7*80;return `<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;color:var(--text-muted)">
+        <span>${d.a||''}</span><div style="width:70%;max-width:34px;height:${h}px;background:var(--heat1);border-radius:3px 3px 0 0;display:flex;align-items:flex-end" title="${d.a}問中${d.c}問正解"><div style="width:100%;height:${hc}px;background:var(--green);border-radius:3px 3px 0 0"></div></div>
+        <span>${k.slice(5).replace('-','/')}</span></div>`;}).join('')}
+    </div><div class="legend"><span><i style="background:var(--green)"></i>正解</span><span><i style="background:var(--heat1)"></i>不正解</span></div></div>
+  <div class="card"><h2>🧩 領域別の習熟度</h2>
+    ${DOMAINS.map(d=>{const list=DATA.filter(q=>q.domain===d);const c=masteryCounts(list);const p=Math.round((c.solid+c.master)/list.length*100);
+      return `<div class="domain-row"><span>${esc(d)}</span>${masteryBar(c)}<span class="pct">${p}%</span></div>`;}).join('')}
+    ${legend(masteryCounts(DATA))}
+    <p class="hint" style="margin-top:.5rem">右の数値＝「定着」以上の割合。低い領域から「自由演習」で取り組むのがおすすめです。</p></div>
+  <div class="card"><h2>🕘 学習履歴 <span class="sub">直近20回</span></h2>
+    ${U.sessions.length?`<table class="hist"><thead><tr><th>日付</th><th>内容</th><th>正答</th><th>XP</th><th>時間</th></tr></thead><tbody>
+      ${U.sessions.slice(0,20).map(s=>`<tr><td>${esc(String(s.date).slice(5).replace('-','/'))}</td><td>${esc(PLAN_NAME[s.plan]||s.plan)}${s.format==='fill'?'（穴埋め）':''}</td><td>${+s.correct||0}/${+s.total||0}</td><td>+${+s.xp||0}</td><td>${fmtTime(+s.sec||0)}</td></tr>`).join('')}
+      </tbody></table>`:'<p class="muted">まだ履歴がありません。</p>'}</div>`;
 }
 
-function render(){ updateStats(); renderQ(); }
+/* ----- 一覧（読んで覚える） ----- */
+function renderList(){
+  const list=DATA.filter(q=>(listFilter.domain==='all'||q.domain===listFilter.domain)&&(listFilter.status==='all'||(listFilter.status==='review'?needsReview(q.id):status(q.id)===listFilter.status)));
+  $('main').innerHTML=`<div class="card"><h2>📖 問題一覧・読んで覚える</h2>
+    <div class="filters">
+      <select onchange="listFilter.domain=this.value;renderList()"><option value="all">すべての領域</option>${DOMAINS.map(d=>`<option ${listFilter.domain===d?'selected':''}>${d}</option>`).join('')}</select>
+      <select onchange="listFilter.status=this.value;renderList()">${[['all','すべての習熟度'],['review','要復習'],['new','未学習'],['learning','学習中'],['solid','定着'],['master','習得']].map(([v,l])=>`<option value="${v}" ${listFilter.status===v?'selected':''}>${l}</option>`).join('')}</select>
+      <label class="row muted" style="gap:4px;cursor:pointer"><input type="checkbox" ${listFilter.mask?'checked':''} onchange="listFilter.mask=this.checked;renderList()"> 答えを隠す（タップで表示）</label>
+    </div>
+    <div class="row" style="margin-bottom:.4rem"><span class="muted">${list.length}問</span>
+      <button class="btn btn-sm spacer" ${list.length?'':'disabled'} onclick="startPlan('ids',[${list.map(q=>q.id).join(',')}])">この${list.length}問を演習</button></div>
+    <div class="qlist">${list.map(q=>{const s=U.qs[q.id];const st=status(q.id);
+      return `<div class="qi"><div class="meta"><span class="hint">No.${q.id}</span><span class="pill ${st}">${STATUS_LABEL[st]}</span>${needsReview(q.id)?'<span class="pill review">要復習</span>':''}
+        <span class="pill">${esc(q.domain)}</span><span class="hint">${esc(q.grade)}</span>${s&&s.n?`<span class="hint spacer">${s.c}/${s.n}正解・次回 ${esc(String(s.due).slice(5).replace('-','/'))}</span>`:''}</div>
+        <div class="txt ${listFilter.mask?'masked':''}" onclick="this.classList.remove('masked')">${qHTML(q,'reveal')}</div>
+        ${U.notes[q.id]?`<div class="hint">📝 ${esc(U.notes[q.id])}</div>`:''}</div>`;}).join('')}</div></div>`;
+}
 
-buildQueue(); render();
+/* ----- 実績 ----- */
+function renderBadges(){
+  const got=BADGES.filter(b=>U.badges[b.id]).length, li=levelInfo(U.xp);
+  $('main').innerHTML=`<div class="card"><h2>🏆 実績 <span class="sub">${got} / ${BADGES.length} 解除</span></h2>
+    <div class="badges">${BADGES.map(b=>`<div class="bdg ${U.badges[b.id]?'':'locked'}"><div class="i">${b.i}</div><div class="n">${esc(b.n)}</div><div class="d">${esc(b.d)}</div>${U.badges[b.id]?`<div class="dt">${esc(U.badges[b.id])} 達成</div>`:''}</div>`).join('')}</div></div>
+  <div class="card"><h2>🎖️ 称号 <span class="sub">2レベルごとに昇格</span></h2><div class="titles">
+    ${TITLES.map((t,i)=>{const lv=i*2+1;const cur=titleOf(li.lv)===t;return `<div class="${cur?'cur':''}"><span style="width:4.5em" class="hint">Lv.${lv}〜</span>${li.lv>=lv?'✅':'🔒'} ${t}${cur?'（現在）':''}</div>`;}).join('')}
+  </div>
+  <p class="hint" style="margin-top:.75rem">XPの目安：選択式で正解 10XP（コンボで最大+10）、穴埋め式は1.5倍、不正解でも挑戦ボーナス 2XP、1日の目標達成で +30XP。</p></div>`;
+}
+
+/* ----- プロフィール・設定 ----- */
+function renderProfile(){
+  const u=me();
+  $('main').innerHTML=`
+  <div class="card"><h2>${esc(u.avatar)} ${esc(u.name)} さんの設定</h2>
+    <div class="form-row"><label for="pName">ニックネーム</label><input type="text" id="pName" maxlength="20" value="${esc(u.name)}" style="width:100%"></div>
+    <div class="form-row"><label>アイコン</label><div class="avatars" id="avatars">${AVATARS.map(a=>`<button type="button" class="${a===u.avatar?'sel':''}" onclick="pickAvatar(this,'${a}')">${a}</button>`).join('')}</div></div>
+    <div class="form-row"><label for="pGoal">1日の目標問題数</label><select id="pGoal">${[5,10,15,20,30,50].map(n=>`<option value="${n}" ${n===U.settings.goal?'selected':''}>${n}問</option>`).join('')}</select></div>
+    <div class="form-row"><label class="row" style="gap:6px;cursor:pointer;color:var(--text)"><input type="checkbox" id="pSound" ${U.settings.sound?'checked':''}> 効果音を鳴らす</label></div>
+    <button class="btn btn-primary" onclick="saveProfile()">保存</button></div>
+  <div class="card"><h2>👥 学習者の切り替え</h2>
+    <div class="user-list">${users.map(x=>`<div class="user-item ${x.id===uid?'cur':''}"><span class="av">${esc(x.avatar)}</span><span>${esc(x.name)}</span>
+      <span class="hint">登録 ${esc(x.created||'')}</span>${x.id===uid?'<span class="spacer pill master">使用中</span>':`<button class="btn btn-sm spacer" onclick="switchUser('${x.id}')">切り替え</button>`}</div>`).join('')}</div>
+    <div class="row" style="margin-top:.75rem"><button class="btn" onclick="logout()">＋ 別の学習者を登録</button></div></div>
+  <div class="card"><h2>💾 データの書き出し・読み込み</h2>
+    <p class="muted" style="margin-bottom:.75rem">学習記録はこの端末のブラウザ内だけに保存されています。機種変更・別のブラウザで続けるときや、ブラウザのデータ削除に備えて、ファイルに書き出して保管してください。</p>
+    <div class="row"><button class="btn" onclick="exportData()">⬇ 書き出す（JSON）</button>
+      <label class="btn" style="cursor:pointer">⬆ 読み込む<input type="file" accept="application/json,.json" class="hidden" onchange="importData(this)"></label></div>
+    <p class="notice" style="margin-top:.9rem">⚠ これは端末内の簡易プロフィールで、パスワード保護はありません。共用PCでは個人情報をニックネームに入れないでください。</p></div>
+  <div class="card"><h2>🗑️ リセット</h2>
+    <div class="row"><button class="btn btn-danger" onclick="resetProgress()">学習記録をリセット</button><button class="btn btn-danger" onclick="deleteUser()">この学習者を削除</button></div></div>`;
+  regAvatar=u.avatar;
+}
+function saveProfile(){
+  const u=me(); const n=$('pName').value.trim(); if(n)u.name=n; u.avatar=regAvatar;
+  U.settings.goal=+$('pGoal').value; U.settings.sound=$('pSound').checked;
+  store.set('users',users); save(); toast('✅','保存しました',''); render();
+}
+function logout(){ uid=null; U=null; store.del('current'); view='home'; render(); }
+function resetProgress(){ if(!confirm('学習記録・XP・実績をすべて消去します。よろしいですか？'))return; const s=U.settings; U=newUserData(); U.settings=s; save(); toast('🔄','リセットしました',''); go('home'); }
+function deleteUser(){
+  if(!confirm(`学習者「${me().name}」と記録を削除します。元に戻せません。よろしいですか？`))return;
+  store.del('u.'+uid); users=users.filter(x=>x.id!==uid); store.set('users',users); logout();
+}
+function exportData(){
+  const blob=new Blob([JSON.stringify({app:'kokugo-drill',version:2,exported:new Date().toISOString(),user:me(),data:U},null,2)],{type:'application/json'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`kokugo-drill_${me().name}_${today()}.json`; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+}
+function importData(inp){
+  const f=inp.files[0]; if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{try{
+    const j=JSON.parse(r.result); if(j.app!=='kokugo-drill'||!j.data||typeof j.data!=='object'||!j.user)throw new Error('format');
+    if(!/^[a-z0-9]{4,40}$/i.test(String(j.user.id))) j.user.id='u'+Date.now().toString(36);
+    if(!AVATARS.includes(j.user.avatar)) j.user.avatar='📚';
+    const exists=users.find(x=>x.id===j.user.id);
+    if(exists&&!confirm(`「${exists.name}」の記録を、読み込んだデータで上書きします。よろしいですか？`))return;
+    if(!exists) users.push({id:j.user.id,name:String(j.user.name||'学習者').slice(0,20),avatar:j.user.avatar||'📚',created:j.user.created||today()});
+    store.set('users',users); store.set('u.'+j.user.id,j.data); loadUser(j.user.id);
+    toast('✅','読み込みました',`${me().name}さんの記録を復元しました`); go('home');
+  }catch(e){ toast('⚠','読み込めませんでした','このアプリで書き出したJSONファイルを選んでください'); } finally{ inp.value=''; }};
+  r.readAsText(f);
+}
+
+/* ================= キーボード操作 ================= */
+document.addEventListener('keydown',e=>{
+  if(view!=='session'||!S||e.isComposing)return;
+  const tag=(e.target.tagName||'').toLowerCase();
+  if(e.key==='Enter'&&S.answered&&tag!=='textarea'){ e.preventDefault(); nextQ(); return; }
+  if(S.format==='choice'&&!S.answered&&/^[1-9]$/.test(e.key)&&tag!=='input'&&tag!=='textarea'){
+    const bi=S.blank.findIndex(s=>s===null); if(bi<0)return;
+    const btn=$('cg'+bi)?.querySelectorAll('.choice-btn')[+e.key-1]; if(btn)btn.click();
+  }
+});
+
+/* ================= 起動 ================= */
+if(uid&&users.some(x=>x.id===uid)) loadUser(uid); else uid=null;
+render();
 </script>
 </body>
 </html>
