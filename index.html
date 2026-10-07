@@ -229,6 +229,12 @@ details.note textarea{width:100%;min-height:70px;margin-top:6px;font-size:13px}
 .notice{font-size:12px;color:var(--amber);background:var(--amber-light);border-radius:var(--radius);padding:.55rem .8rem;line-height:1.7}
 .welcome{text-align:center;padding:1.5rem 1rem}
 .welcome .big{font-size:44px}
+.auth-msg{font-size:13px;color:var(--red-border);margin-top:.75rem;min-height:1em;white-space:pre-line}
+.auth-msg.ok{color:var(--green-dark)}
+.or{display:flex;align-items:center;gap:10px;color:var(--text-hint);font-size:12px;margin:.9rem 0}
+.or::before,.or::after{content:"";flex:1;border-top:1px solid var(--border)}
+input[type=email],input[type=password]{font-family:inherit;font-size:14px;padding:6px 10px;border:1px solid var(--border-strong);border-radius:var(--radius);background:var(--surface);color:var(--text);}
+#syncIcon{font-size:13px}
 
 /* ─── トースト・演出 ─── */
 .toasts{position:fixed;left:50%;top:14px;transform:translateX(-50%);display:flex;flex-direction:column;gap:8px;z-index:50;width:min(92vw,420px);pointer-events:none}
@@ -275,6 +281,7 @@ details.note textarea{width:100%;min-height:70px;margin-top:6px;font-size:13px}
 </div>
 <div class="toasts" id="toasts" aria-live="polite"></div>
 
+<script src="firebase-config.js"></script>
 <script>
 /* ================= 問題データ ================= */
 const DATA = [{"id":1,"section":"国語科改訂の要点","grade":"全学年共通","domain":"目標・総則","question":"国語科で育成を目指す資質・能力を「国語で正確に理解し適切に表現する資質・能力」と規定するとともに、三つの柱で整理した。その三つとは「【①】」「【②】」「【③】」である。","blanks":["知識及び技能","思考力、判断力、表現力等","学びに向かう力、人間性等"],"choices":[["知識及び技能","表現力及び技能","言語知識と技能"],["思考力、判断力、表現力等","創造力、判断力、表現力等","思考力、応用力、表現力等"],["学びに向かう力、人間性等","主体性、多様性、協働性","生きる力、人間性、社会性"]]},{"id":2,"section":"国語科改訂の要点","grade":"全学年共通","domain":"目標・総則","question":"学年別漢字配当表の【①】学年に、都道府県名に用いる漢字【②】字を配当した。また、これに伴い【③】字の配当学年を移行した。","blanks":["第4","25","32"],"choices":[["第3","第4","第5"],["20","25","30"],["28","30","32"]]},{"id":3,"section":"国語科の目標","grade":"全学年共通","domain":"目標・総則","question":"【①】を働かせ、言語活動を通して、国語で正確に理解し適切に表現する資質・能力を育成することを目指す。","blanks":["言葉による見方・考え方"],"choices":[["言葉による見方・考え方","思考力・判断力・表現力","言語感覚と読解力"]]},{"id":4,"section":"国語科の目標","grade":"全学年共通","domain":"目標・総則","question":"国語科の目標(2)：日常生活における人との関わりの中で【①】を高め、【②】を養う。","blanks":["伝え合う力","思考力や想像力"],"choices":[["伝え合う力","読解力","表現力"],["思考力や想像力","言語感覚","創造力や判断力"]]},{"id":5,"section":"国語科の目標","grade":"全学年共通","domain":"目標・総則","question":"国語科の目標(3)：【①】を認識するとともに、言語感覚を養い、国語の【②】を自覚し、国語を尊重してその【③】を図る態度を養う。","blanks":["言葉がもつよさ","大切さ","能力の向上"],"choices":[["言葉がもつよさ","言語の美しさ","語彙の豊かさ"],["大切さ","重要性","素晴らしさ"],["能力の向上","知識の拡充","技能の向上"]]},{"id":6,"section":"各学年の目標","grade":"全学年共通","domain":"目標・総則","question":"各学年の目標は、教科目標の(1)(2)(3)に対応して、【①】のまとまりごとに示されている。","blanks":["2学年"],"choices":[["1学年","2学年","3学年"]]},{"id":7,"section":"各学年の目標","grade":"第1学年・第2学年","domain":"目標・総則","question":"【第1・2学年】思考力等の目標：順序立てて考える力や感じたり【①】したりする力を養い、日常生活における人との関わりの中で【②】を高め、自分の思いや考えを【③】ことができるようにする。","blanks":["想像","伝え合う力","もつ"],"choices":[["想像","思考","観察"],["伝え合う力","表現する力","読解する力"],["もつ","まとめる","広げる"]]},{"id":8,"section":"各学年の目標","grade":"第3学年・第4学年","domain":"目標・総則","question":"【第3・4学年】思考力等の目標：【①】考える力や豊かに感じたり想像したりする力を養い、日常生活における人との関わりの中で伝え合う力を高め、自分の思いや考えを【②】ことができるようにする。","blanks":["筋道立てて","まとめる"],"choices":[["筋道立てて","順序立てて","論理立てて"],["まとめる","もつ","広げる"]]},{"id":9,"section":"各学年の目標","grade":"第5学年・第6学年","domain":"目標・総則","question":"【第5・6学年】思考力等の目標：筋道立てて考える力や豊かに感じたり想像したりする力を養い、日常生活における人との関わりの中で伝え合う力を高め、自分の思いや考えを【①】ことができるようにする。","blanks":["広げる"],"choices":[["広げる","まとめる","深める"]]},{"id":10,"section":"各学年の目標","grade":"第1学年・第2学年","domain":"目標・総則","question":"【第1・2学年】学びに向かう力の目標：言葉がもつよさを【①】とともに、楽しんで読書をし、国語を大切にして、思いや考えを伝え合おうとする態度を養う。","blanks":["感じる"],"choices":[["感じる","気付く","認識する"]]},{"id":11,"section":"各学年の目標","grade":"第3学年・第4学年","domain":"目標・総則","question":"【第3・4学年】学びに向かう力の目標：言葉がもつよさに【①】とともに、【②】読書をし、国語を大切にして、思いや考えを伝え合おうとする態度を養う。","blanks":["気付く","幅広く"],"choices":[["感じる","気付く","認識する"],["幅広く","進んで","楽しんで"]]},{"id":12,"section":"各学年の目標","grade":"第5学年・第6学年","domain":"目標・総則","question":"【第5・6学年】学びに向かう力の目標：言葉がもつよさを【①】とともに、【②】読書をし、国語の大切さを自覚して、思いや考えを伝え合おうとする態度を養う。","blanks":["認識する","進んで"],"choices":[["感じる","気付く","認識する"],["幅広く","進んで","楽しんで"]]},{"id":13,"section":"知識及び技能／言葉の特徴や使い方","grade":"第1学年・第2学年","domain":"知識及び技能","question":"【第1・2学年】話し言葉：音節と文字との関係、【①】による語の意味の違いなどに気付くとともに、姿勢や口形、発声や発音に注意して話すこと。","blanks":["アクセント"],"choices":[["アクセント","イントネーション","リズム"]]},{"id":14,"section":"知識及び技能／言葉の特徴や使い方","grade":"第1学年・第2学年","domain":"知識及び技能","question":"【第1・2学年】表記：長音、拗音、促音、【①】などの表記、助詞の「は」、「へ」及び「を」の使い方、【②】の打ち方、かぎ（「　」）の使い方を理解して文や文章の中で使うこと。","blanks":["撥音","句読点"],"choices":[["撥音","促音","長音"],["句読点","読点","傍点"]]},{"id":15,"section":"知識及び技能／言葉の特徴や使い方","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】話し言葉：相手を見て話したり聞いたりするとともに、言葉の抑揚や強弱、【①】などに注意して話すこと。","blanks":["間の取り方"],"choices":[["間の取り方","声の大きさ","話す速さ"]]},{"id":16,"section":"知識及び技能／言葉の特徴や使い方","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】ローマ字：第3学年においては、日常使われている簡単な単語について、【①】で表記されたものを読み、【①】で書くこと。","blanks":["ローマ字"],"choices":[["ローマ字","アルファベット","仮名"]]},{"id":17,"section":"知識及び技能／言葉の特徴や使い方","grade":"第1学年・第2学年","domain":"知識及び技能","question":"【第1・2学年】語彙：身近なことを表す語句の量を増し、話や文章の中で使うとともに、言葉には【①】による語句のまとまりがあることに気付き、語彙を豊かにすること。","blanks":["意味"],"choices":[["意味","音韻","性質"]]},{"id":18,"section":"知識及び技能／言葉の特徴や使い方","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】語彙：様子や行動、【①】を表す語句の量を増し、話や文章の中で使うとともに、言葉には性質や役割による語句のまとまりがあることを理解し、語彙を豊かにすること。","blanks":["気持ちや性格"],"choices":[["気持ちや性格","思考や感情","行動や表情"]]},{"id":19,"section":"知識及び技能／言葉の特徴や使い方","grade":"第5学年・第6学年","domain":"知識及び技能","question":"【第5・6学年】語彙：【①】に関わる語句の量を増し、語句と語句との関係、語句の【②】について理解し、語彙を豊かにすること。また、語感や言葉の使い方に対する感覚を意識して語や語句を使うこと。","blanks":["思考","構成や変化"],"choices":[["思考","感情","表現"],["構成や変化","意味や用法","音韻と形態"]]},{"id":20,"section":"知識及び技能／言葉の特徴や使い方","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】文や文章：【①】と述語との関係、修飾と被修飾との関係、指示する語句と【②】する語句の役割、【③】の役割について理解すること。","blanks":["主語","接続","段落"],"choices":[["主語","述語","修飾語"],["接続","指示","修飾"],["段落","文章","節"]]},{"id":21,"section":"知識及び技能／言葉の特徴や使い方","grade":"第1学年・第2学年","domain":"知識及び技能","question":"【第1・2学年】言葉遣い：丁寧な言葉と普通の言葉との違いに気を付けて使うとともに、【①】で書かれた文章に慣れること。","blanks":["敬体"],"choices":[["敬体","常体","文語体"]]},{"id":22,"section":"知識及び技能／言葉の特徴や使い方","grade":"第5学年・第6学年","domain":"知識及び技能","question":"【第5・6学年】言葉遣い：日常よく使われる【①】を理解し使い慣れること。","blanks":["敬語"],"choices":[["敬語","敬体","丁寧語"]]},{"id":23,"section":"知識及び技能／言葉の特徴や使い方","grade":"第5学年・第6学年","domain":"知識及び技能","question":"【第5・6学年】表現の技法：【①】などの表現の工夫に気付くこと。","blanks":["比喩や反復"],"choices":[["比喩や反復","体言止めや倒置","擬音語や擬態語"]]},{"id":24,"section":"知識及び技能／情報の扱い方","grade":"第1学年・第2学年","domain":"知識及び技能","question":"【第1・2学年】情報と情報との関係：【①】、相違、事柄の順序など情報と情報との関係について理解すること。","blanks":["共通"],"choices":[["共通","原因","比較"]]},{"id":25,"section":"知識及び技能／情報の扱い方","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】情報と情報との関係：考えとそれを支える【①】、全体と【②】など情報と情報との関係について理解すること。","blanks":["理由や事例","中心"],"choices":[["理由や事例","根拠や論点","原因と結果"],["中心","要点","結論"]]},{"id":26,"section":"知識及び技能／情報の扱い方","grade":"第5学年・第6学年","domain":"知識及び技能","question":"【第5・6学年】情報と情報との関係：【①】など情報と情報との関係について理解すること。","blanks":["原因と結果"],"choices":[["原因と結果","共通と相違","全体と中心"]]},{"id":27,"section":"知識及び技能／情報の扱い方","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】情報の整理：比較や分類の仕方、必要な語句などの書き留め方、【①】の仕方や出典の示し方、【②】や事典の使い方を理解し使うこと。","blanks":["引用","辞書"],"choices":[["引用","要約","転用"],["辞書","図鑑","事典"]]},{"id":28,"section":"知識及び技能／言語文化","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】伝統的な言語文化：易しい文語調の短歌や俳句を音読したり暗唱したりするなどして、言葉の【①】に親しむこと。","blanks":["響きやリズム"],"choices":[["響きやリズム","意味と用法","歴史と文化"]]},{"id":29,"section":"知識及び技能／言語文化","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】慣用表現：長い間使われてきた【①】などの意味を知り、使うこと。","blanks":["ことわざや慣用句、故事成語"],"choices":[["ことわざや慣用句、故事成語","和歌や俳句、連歌","神話や伝説、民話"]]},{"id":30,"section":"知識及び技能／言語文化","grade":"第3学年・第4学年","domain":"知識及び技能","question":"【第3・4学年】漢字の構成：漢字が、【①】などから構成されていることについて理解すること。","blanks":["へんやつくり"],"choices":[["へんやつくり","音読みと訓読み","画数と筆順"]]},{"id":31,"section":"知識及び技能／言語文化","grade":"第5学年・第6学年","domain":"知識及び技能","question":"【第5・6学年】言葉の由来や変化：語句の由来などに関心をもつとともに、時間の経過による言葉の変化や世代による言葉の違いに気付き、【①】との違いを理解すること。","blanks":["共通語と方言"],"choices":[["共通語と方言","書き言葉と話し言葉","古語と現代語"]]},{"id":32,"section":"知識及び技能／言語文化","grade":"第3学年以上","domain":"知識及び技能","question":"書写：毛筆を使用する書写の指導は【①】以上の各学年で行い、各学年年間【②】単位時間程度を配当する。","blanks":["第3学年","30"],"choices":[["第1学年","第2学年","第3学年"],["20","25","30"]]},{"id":33,"section":"思考力・判断力・表現力等／話すこと・聞くこと","grade":"第1学年・第2学年","domain":"話すこと・聞くこと","question":"【第1・2学年】構成の検討：相手に伝わるように、行動したことや経験したことに基づいて、話す事柄の【①】を考えること。","blanks":["順序"],"choices":[["順序","構成","中心"]]},{"id":34,"section":"思考力・判断力・表現力等／話すこと・聞くこと","grade":"第3学年・第4学年","domain":"話すこと・聞くこと","question":"【第3・4学年】構成の検討：相手に伝わるように、理由や事例などを挙げながら、話の【①】が明確になるよう【②】を考えること。","blanks":["中心","話の構成"],"choices":[["中心","要点","順序"],["話の構成","話の展開","話の順序"]]},{"id":35,"section":"思考力・判断力・表現力等／話すこと・聞くこと","grade":"第1学年・第2学年","domain":"話すこと・聞くこと","question":"【第1・2学年】表現：伝えたい事柄や相手に応じて、【①】などを工夫すること。","blanks":["声の大きさや速さ"],"choices":[["声の大きさや速さ","言葉の抑揚や強弱","資料の活用"]]},{"id":36,"section":"思考力・判断力・表現力等／話すこと・聞くこと","grade":"第3学年・第4学年","domain":"話すこと・聞くこと","question":"【第3・4学年】表現：話の中心や話す場面を意識して、【①】などを工夫すること。","blanks":["言葉の抑揚や強弱、間の取り方"],"choices":[["言葉の抑揚や強弱、間の取り方","声の大きさや速さ","資料の活用や表現の工夫"]]},{"id":37,"section":"思考力・判断力・表現力等／話すこと・聞くこと","grade":"第3学年・第4学年","domain":"話すこと・聞くこと","question":"【第3・4学年】話合いの進め方：目的や進め方を確認し、【①】などの役割を果たしながら話し合い、互いの意見の【②】に着目して、考えをまとめること。","blanks":["司会","共通点や相違点"],"choices":[["司会","記録係","発表者"],["共通点や相違点","長所と短所","原因と結果"]]},{"id":38,"section":"思考力・判断力・表現力等／話すこと・聞くこと","grade":"第5学年・第6学年","domain":"話すこと・聞くこと","question":"【第5・6学年】話合いの進め方：互いの【①】を明確にしながら【②】に話し合い、考えを広げたりまとめたりすること。","blanks":["立場や意図","計画的"],"choices":[["立場や意図","共通点や相違点","意見と理由"],["計画的","積極的","協力的"]]},{"id":39,"section":"思考力・判断力・表現力等／書くこと","grade":"第3学年・第4学年","domain":"書くこと","question":"【第3・4学年】構成の検討：書く内容の中心を明確にし、内容のまとまりで【①】をつくったり、段落相互の関係に注意したりして、文章の構成を考えること。","blanks":["段落"],"choices":[["段落","章","節"]]},{"id":40,"section":"思考力・判断力・表現力等／書くこと","grade":"第5学年・第6学年","domain":"書くこと","question":"【第5・6学年】構成の検討：【①】文章となるように、文章全体の構成や展開を考えること。","blanks":["筋道の通った"],"choices":[["筋道の通った","段落が明確な","事実と意見が区別された"]]},{"id":41,"section":"思考力・判断力・表現力等／書くこと","grade":"第3学年・第4学年","domain":"書くこと","question":"【第3・4学年】考えの形成・記述：自分の考えとそれを支える【①】との関係を明確にして、書き表し方を工夫すること。","blanks":["理由や事例"],"choices":[["理由や事例","感想や意見","図表やグラフ"]]},{"id":42,"section":"思考力・判断力・表現力等／書くこと","grade":"第5学年・第6学年","domain":"書くこと","question":"【第5・6学年】考えの形成・記述：引用したり、【①】などを用いたりして、自分の考えが伝わるように書き表し方を工夫すること。","blanks":["図表やグラフ"],"choices":[["図表やグラフ","写真や絵","事例や体験"]]},{"id":43,"section":"思考力・判断力・表現力等／読むこと","grade":"第3学年・第4学年","domain":"読むこと","question":"【第3・4学年】構造と内容の把握（説明的な文章）：【①】の関係に着目しながら、考えとそれを支える理由や事例との関係などについて、叙述を基に捉えること。","blanks":["段落相互"],"choices":[["段落相互","文と文","語句と語句"]]},{"id":44,"section":"思考力・判断力・表現力等／読むこと","grade":"第5学年・第6学年","domain":"読むこと","question":"【第5・6学年】構造と内容の把握（説明的な文章）：事実と感想、意見などとの関係を叙述を基に押さえ、文章全体の構成を捉えて【①】すること。","blanks":["要旨を把握"],"choices":[["要旨を把握","内容を要約","主題を理解"]]},{"id":45,"section":"思考力・判断力・表現力等／読むこと","grade":"第3学年・第4学年","domain":"読むこと","question":"【第3・4学年】精査・解釈（文学的な文章）：登場人物の【①】や性格、情景について、場面の移り変わりと結び付けて具体的に想像すること。","blanks":["気持ちの変化"],"choices":[["気持ちの変化","相互関係","行動や言葉"]]},{"id":46,"section":"思考力・判断力・表現力等／読むこと","grade":"第5学年・第6学年","domain":"読むこと","question":"【第5・6学年】精査・解釈（説明的な文章）：目的に応じて、文章と図表などを結び付けるなどして必要な情報を見付けたり、【①】について考えたりすること。","blanks":["論の進め方"],"choices":[["論の進め方","文章の構成","筆者の意図"]]},{"id":47,"section":"指導計画の作成と内容の取扱い","grade":"全学年共通","domain":"指導計画・取扱い","question":"「A 話すこと・聞くこと」の年間配当時間：第1・2学年では年間【①】単位時間程度、第3・4学年では年間【②】単位時間程度、第5・6学年では年間【③】単位時間程度。","blanks":["35","30","25"],"choices":[["25","30","35"],["25","30","35"],["25","30","35"]]},{"id":48,"section":"指導計画の作成と内容の取扱い","grade":"全学年共通","domain":"指導計画・取扱い","question":"「B 書くこと」の年間配当時間：第1・2学年では年間【①】単位時間程度、第3・4学年では年間【②】単位時間程度、第5・6学年では年間【③】単位時間程度。","blanks":["100","85","55"],"choices":[["85","100","120"],["70","85","100"],["45","55","70"]]},{"id":49,"section":"指導計画の作成と内容の取扱い","grade":"全学年共通","domain":"指導計画・取扱い","question":"学校図書館の3機能：【①】（読書活動・読書指導の場）、【②】（学習活動を支援し理解を深める）、【③】（情報ニーズへの対応・情報活用能力の育成）。","blanks":["読書センター","学習センター","情報センター"],"choices":[["読書センター","図書センター","文化センター"],["学習センター","教育センター","研究センター"],["情報センター","調査センター","資料センター"]]},{"id":50,"section":"指導計画の作成と内容の取扱い","grade":"全学年共通","domain":"指導計画・取扱い","question":"「C 読むこと」に関する指導については、【①】を高め、日常生活において読書活動を活発に行うようにするとともに、他教科等の学習における読書の指導や【②】における指導との関連を考えて行うこと。","blanks":["読書意欲","学校図書館"],"choices":[["読書意欲","読書習慣","言語感覚"],["学校図書館","公共図書館","家庭"]]}];
@@ -308,16 +315,24 @@ function newUserData(){
   return {qs:{},xp:0,streak:{count:0,last:null},days:{},sessions:[],badges:{},notes:{},flags:{},
     settings:{goal:10,sound:true,format:'choice'},bestCombo:0,fillCorrect:0};
 }
-let users=store.get('users',[]);   // [{id,name,avatar,created}]
-let uid=store.get('current',null);
-let U=null;                          // 現在のユーザーの学習データ
-function loadUser(id){
-  uid=id; store.set('current',id);
-  U=Object.assign(newUserData(),store.get('u.'+id,{}));
-  U.settings=Object.assign(newUserData().settings,U.settings||{});
+function normalizeData(d){
+  const u=Object.assign(newUserData(),d&&typeof d==='object'?d:{});
+  u.settings=Object.assign(newUserData().settings,u.settings||{});
+  return u;
 }
-function save(){ if(uid) store.set('u.'+uid,U); }
-function me(){ return users.find(x=>x.id===uid); }
+let users=store.get('users',[]);   // この端末だけで使う学習者 [{id,name,avatar,created}]
+let mode=null;                       // 'cloud'（アカウントでログイン）| 'local'（この端末だけ）
+let uid=null;                        // cloud：FirebaseのUID／local：学習者ID
+let U=null;                          // 現在のユーザーの学習データ
+let cloudProfile=null;               // cloud のプロフィール {name,avatar,created,email}
+function loadUser(id){
+  mode='local'; uid=id; store.set('current',id); store.set('mode','local');
+  U=normalizeData(store.get('u.'+id,{}));
+  // ブラウザに「消さないでほしい保存領域」として申請（対応ブラウザのみ）
+  try{ navigator.storage.persist().catch(()=>{}); }catch(e){}
+}
+function save(){ if(!U)return; if(mode==='cloud') cloudSave(); else if(uid) store.set('u.'+uid,U); }
+function me(){ return mode==='cloud'?cloudProfile:users.find(x=>x.id===uid); }
 
 /* ================= ユーティリティ ================= */
 const $=id=>document.getElementById(id);
@@ -330,6 +345,170 @@ function fmtTime(sec){sec=Math.round(sec);return `${Math.floor(sec/60)}:${String
 function norm(s){return String(s).normalize('NFKC').replace(/\s+/g,'').replace(/[,，]/g,'、').replace(/[･]/g,'・');}
 function lev(a,b){const m=a.length,n=b.length;const d=Array.from({length:m+1},(_,i)=>[i]);for(let j=1;j<=n;j++)d[0][j]=j;
   for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[m][n];}
+
+/* ================= クラウド保存（Firebase） =================
+   firebase-config.js に設定があるときだけ有効。記録は Firestore の users/{UID} に保存し、
+   この端末にも控え（c.{UID}）を置いて、通信できないときの書き込みを次回に送る。 */
+const FB_VER='12.19.0';
+const CLOUD_ON=!!(window.FIREBASE_CONFIG&&window.FIREBASE_CONFIG.apiKey);
+const cloud={auth:null,db:null,user:null,failed:false,loadError:null,lastError:null,errShown:false,
+  state:'saved',savedAt:0,updatedAt:0,timer:null,pushing:false,again:false,pendingProfile:null};
+let booting=false;     // ログイン状態の確認中
+let showLocal=false;   // 「この端末だけで使う」画面を表示中
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+
+function loadScript(src){
+  return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;
+    s.onerror=()=>{s.remove();rej(new Error('load '+src));};document.head.appendChild(s);});
+}
+async function loadFirebase(){
+  const bases=[`https://www.gstatic.com/firebasejs/${FB_VER}/`,`https://cdn.jsdelivr.net/npm/firebase@${FB_VER}/`];
+  for(const f of ['firebase-app-compat.js','firebase-auth-compat.js','firebase-firestore-compat.js']){
+    let ok=false;
+    for(const b of bases){ try{ await loadScript(b+f); ok=true; break; }catch(e){} }
+    if(!ok) throw new Error('sdk');
+  }
+}
+async function initCloud(){
+  try{
+    await loadFirebase();
+    firebase.initializeApp(window.FIREBASE_CONFIG);
+    cloud.auth=firebase.auth(); cloud.auth.languageCode='ja';
+    cloud.db=firebase.firestore();
+    if(window.FIREBASE_EMULATOR){ cloud.auth.useEmulator('http://127.0.0.1:9099'); cloud.db.useEmulator('127.0.0.1',8080); }
+    cloud.auth.onAuthStateChanged(onAuth);
+  }catch(e){
+    cloud.failed=true; booting=false; if(!U) render();
+  }
+}
+async function onAuth(user){
+  cloud.user=user;
+  if(!user){
+    const wasBooting=booting; booting=false;
+    if(mode==='cloud'){ clearCloudState(); render(); }
+    else if(wasBooting||!U) render();
+    return;
+  }
+  if(mode==='local') return;           // この端末だけで使っている間は切り替えない
+  booting=true; cloud.loadError=null; render();
+  try{ await cloudLoad(user); view='home'; }
+  catch(e){ cloud.loadError=e; }
+  booting=false; render();
+}
+function clearCloudState(){ clearTimeout(cloud.timer); cloud.timer=null; mode=null; uid=null; U=null; cloudProfile=null; S=null; view='home'; }
+
+async function cloudLoad(user){
+  const key='c.'+user.uid, cache=store.get(key,null);
+  let remote=null, err=null;
+  try{
+    const snap=await cloud.db.collection('users').doc(user.uid).get();
+    if(snap.exists){
+      const d=snap.data();
+      remote={profile:{name:d.name||'学習者',avatar:d.avatar||'📚',created:d.created||today(),email:d.email||user.email||''},
+              data:JSON.parse(d.json||'{}'),updatedAt:d.updatedAt||0};
+    }
+  }catch(e){ err=e; cloud.lastError=e; }
+  let src, push=false;
+  if(cache&&cache.dirty&&(!remote||cache.updatedAt>remote.updatedAt)){ src=cache; push=true; }  // 前回送れなかった分
+  else if(remote) src=remote;
+  else if(err&&cache) src=cache;                                    // 通信できない：端末の控えで続ける
+  else if(err) throw err;
+  else { src=newCloudAccount(user); push=true; }                    // 初めてのログイン
+  mode='cloud'; uid=user.uid; showLocal=false; store.del('mode');
+  cloudProfile=src.profile; U=normalizeData(src.data);
+  cloud.updatedAt=src.updatedAt||Date.now(); cloud.savedAt=push||err?0:Date.now();
+  store.set(key,{profile:cloudProfile,data:U,updatedAt:cloud.updatedAt,dirty:push});
+  setSync(err?(err.code==='permission-denied'?'error':'offline'):push?'saving':'saved');
+  if(push) cloudPush();
+}
+function newCloudAccount(user){
+  const p=cloud.pendingProfile; cloud.pendingProfile=null;
+  const profile={name:String((p&&p.name)||user.displayName||(user.email||'').split('@')[0]||'学習者').slice(0,20),
+    avatar:(p&&p.avatar)||'📚',created:today(),email:user.email||''};
+  let data=newUserData(); if(p&&p.goal) data.settings.goal=p.goal;
+  const c=migrationCandidate();
+  if(c&&confirm(`この端末に保存されている「${c.user.name}」さんの記録（解答${c.answered}問・${c.data.xp||0}XP）を、このアカウントに引き継ぎますか？`)){
+    data=normalizeData(c.data);
+    if(!p){ profile.name=c.user.name; profile.avatar=c.user.avatar; }
+  }
+  store.del('migrateFrom');
+  return {profile,data,updatedAt:Date.now()};
+}
+function migrationCandidate(){
+  const prefer=store.get('migrateFrom',null)||store.get('current',null);
+  const list=users.map(u=>{const data=store.get('u.'+u.id,null);
+    return {user:u,data,answered:data?Object.values(data.days||{}).reduce((a,d)=>a+(d.a||0),0):0};}).filter(x=>x.answered>0);
+  return list.find(x=>x.user.id===prefer)||list[0]||null;
+}
+function cloudSave(){
+  cloud.updatedAt=Date.now();
+  store.set('c.'+uid,{profile:cloudProfile,data:U,updatedAt:cloud.updatedAt,dirty:true});
+  setSync('saving');
+  clearTimeout(cloud.timer); cloud.timer=setTimeout(cloudPush,1200);
+}
+async function cloudPush(){
+  clearTimeout(cloud.timer); cloud.timer=null;
+  if(mode!=='cloud'||!cloud.user) return;
+  if(cloud.pushing){ cloud.again=true; return; }
+  cloud.pushing=true;
+  const at=cloud.updatedAt, id=uid, p=cloudProfile;
+  const slow=setTimeout(()=>{ if(cloud.pushing) setSync('offline'); },8000);
+  try{
+    await cloud.db.collection('users').doc(id).set({name:p.name,avatar:p.avatar,created:p.created,email:p.email||'',
+      json:JSON.stringify(U),updatedAt:at,savedAt:firebase.firestore.FieldValue.serverTimestamp(),app:'kokugo-drill',v:2});
+    const c=store.get('c.'+id,null); if(c&&c.updatedAt===at){ c.dirty=false; store.set('c.'+id,c); }
+    cloud.savedAt=Date.now(); if(cloud.updatedAt===at&&mode==='cloud') setSync('saved');
+  }catch(e){
+    cloud.lastError=e; if(mode==='cloud') setSync(e.code==='permission-denied'?'error':'offline');
+  }finally{
+    clearTimeout(slow); cloud.pushing=false;
+    if(cloud.again){ cloud.again=false; cloudPush(); }
+  }
+}
+async function cloudFlush(ms=5000){
+  if(cloud.timer) cloudPush();
+  const t0=Date.now(); while((cloud.pushing||cloud.timer)&&Date.now()-t0<ms) await sleep(100);
+}
+const SYNC={saved:['☁️','クラウドに保存済み'],saving:['⏳','保存中…'],
+  offline:['⚠️','未送信：インターネットに接続すると自動で保存します'],error:['⚠️','クラウドに保存できません']};
+function syncLabel(){
+  const [i,t]=SYNC[cloud.state];
+  return `${i} ${t}${cloud.state==='saved'&&cloud.savedAt?`（${new Date(cloud.savedAt).toLocaleTimeString('ja-JP',{hour:'2-digit',minute:'2-digit'})}）`:''}`;
+}
+function setSync(s){
+  cloud.state=s;
+  const el=$('syncIcon'); if(el){ el.textContent=SYNC[s][0]; el.title=SYNC[s][1]; }
+  const st=$('syncText'); if(st) st.textContent=syncLabel();
+  if(s==='error'&&!cloud.errShown){ cloud.errShown=true; toast('⚠','クラウドに保存できません',dbErr(cloud.lastError)); }
+}
+function dbErr(e){
+  const c=(e&&e.code)||'';
+  if(c==='permission-denied') return '【管理者向け】Firestore のセキュリティルールで読み書きが許可されていません（README の手順4）。';
+  if(c==='unavailable') return '通信できませんでした。インターネット接続を確認してください。';
+  if(c==='not-found'||c==='failed-precondition') return '【管理者向け】Firestore のデータベースが作成されていない可能性があります（README の手順4）。';
+  return `エラーが発生しました（${c||(e&&e.message)||e}）`;
+}
+function authErr(e){
+  const bad='メールアドレスまたはパスワードが違います。';
+  const m={'x/empty':'メールアドレスとパスワードを入力してください。','x/name':'ニックネームを入力してください。',
+    'auth/invalid-email':'メールアドレスの形式が正しくありません。','auth/missing-password':'パスワードを入力してください。',
+    'auth/missing-email':'メールアドレスを入力してください。',
+    'auth/weak-password':'パスワードは6文字以上にしてください。',
+    'auth/email-already-in-use':'このメールアドレスはすでに登録されています。「ログイン」から入ってください。',
+    'auth/invalid-credential':bad,'auth/invalid-login-credentials':bad,'auth/wrong-password':bad,'auth/user-not-found':bad,
+    'auth/too-many-requests':'試行回数が多すぎます。しばらく待ってから、もう一度お試しください。',
+    'auth/network-request-failed':'通信エラーです。インターネット接続を確認してください。',
+    'auth/popup-closed-by-user':'ログイン画面が閉じられました。','auth/cancelled-popup-request':'',
+    'auth/popup-blocked':'ポップアップがブロックされました。ブラウザでこのサイトのポップアップを許可して、もう一度押してください。',
+    'auth/unauthorized-domain':'【管理者向け】このサイトのドメインが Firebase で許可されていません（README の手順3）。',
+    'auth/operation-not-allowed':'【管理者向け】このログイン方法が Firebase で有効になっていません（README の手順3）。',
+    'auth/requires-recent-login':'安全のため、一度ログアウトして再度ログインしてから操作してください。'};
+  const c=e&&e.code;
+  return c in m?m[c]:`エラーが発生しました（${c||(e&&e.message)||e}）`;
+}
+document.addEventListener('visibilitychange',()=>{ if(document.visibilityState==='hidden'&&mode==='cloud'&&cloud.timer) cloudPush(); });
+window.addEventListener('online',()=>{ if(mode==='cloud'){ const c=store.get('c.'+uid,null); if(c&&c.dirty) cloudPush(); } });
+window.addEventListener('beforeunload',e=>{ if(mode==='cloud'&&(cloud.timer||cloud.pushing)){ cloudPush(); e.preventDefault(); e.returnValue=''; } });
 
 /* ================= 学習ロジック ================= */
 function qstate(id){return U.qs[id];}
@@ -448,7 +627,7 @@ function render(){
 }
 function renderChip(){
   const u=me(),li=levelInfo(U.xp);
-  $('userChip').innerHTML=`<span class="av">${esc(u.avatar)}</span><span class="nm">${esc(u.name)}</span><span class="lv">Lv.${li.lv}</span>`;
+  $('userChip').innerHTML=`<span class="av">${esc(u.avatar)}</span><span class="nm">${esc(u.name)}</span><span class="lv">Lv.${li.lv}</span>${mode==='cloud'?`<span id="syncIcon" title="${SYNC[cloud.state][1]}">${SYNC[cloud.state][0]}</span>`:''}`;
 }
 function ringSVG(p){
   const r=14,c=2*Math.PI*r,v=Math.min(1,p);
@@ -465,17 +644,65 @@ function renderHud(){
   </div>`;
 }
 
-/* ----- ようこそ／ユーザー登録 ----- */
+/* ----- ようこそ／ログイン・登録 ----- */
 let regAvatar=AVATARS[0];
+let authTab='login';
 function renderWelcome(){
-  const has=users.length>0;
+  if(booting){ $('main').innerHTML=`<div class="card welcome"><div class="big">⏳</div><p class="muted">読み込み中…</p></div>`; return; }
+  if(CLOUD_ON&&!showLocal){ renderAuth(); return; }
+  renderLocalWelcome();
+}
+function renderAuth(){
+  const signup=authTab==='signup';
   $('main').innerHTML=`
   <div class="card welcome">
     <div class="big">📚</div>
     <h2 style="justify-content:center;font-size:17px">ようこそ！</h2>
-    <p class="muted">学習者を登録すると、解答履歴・レベル・実績がこの端末に保存され、<br>忘れかけた問題を自動で出題する「間隔反復」で効率よく覚えられます。</p>
+    <p class="muted">アカウントでログインすると、学習の記録がクラウドに保存されます。<br>パソコンを再起動しても、別の端末（スマホなど）からでも、続きから学習できます。</p>
   </div>
-  ${has?`<div class="card"><h2>👤 登録済みの学習者</h2><div class="user-list">${users.map(u=>`
+  ${cloud.failed?'<p class="notice" style="margin-bottom:1rem">⚠ ログイン機能を読み込めませんでした。インターネット接続を確認して、ページを再読み込みしてください。</p>':''}
+  ${cloud.loadError?`<p class="notice" style="margin-bottom:1rem">⚠ 記録を読み込めませんでした：${esc(dbErr(cloud.loadError))}
+    <br><button class="btn btn-sm" style="margin-top:.4rem" onclick="onAuth(cloud.user)">もう一度読み込む</button> <button class="btn btn-sm" style="margin-top:.4rem" onclick="cloud.auth.signOut()">ログアウト</button></p>`:''}
+  <div class="card">
+    <div class="format-switch" role="tablist">
+      <button class="${signup?'':'active'}" onclick="authTab='login';renderAuth()">ログイン</button>
+      <button class="${signup?'active':''}" onclick="authTab='signup';renderAuth()">新規登録</button>
+    </div>
+    ${signup?`
+    <form onsubmit="event.preventDefault();doSignup()" autocomplete="on">
+      <div class="form-row"><label for="regName">ニックネーム（20文字まで・ほかの人には表示されません）</label><input type="text" id="regName" maxlength="20" placeholder="例：さくら" style="width:100%"></div>
+      <div class="form-row"><label>アイコン</label><div class="avatars" id="avatars">${AVATARS.map(a=>`<button type="button" class="${a===regAvatar?'sel':''}" onclick="pickAvatar(this,'${a}')">${a}</button>`).join('')}</div></div>
+      <div class="form-row"><label for="regGoal">1日の目標問題数</label>
+        <select id="regGoal">${[5,10,15,20,30].map(n=>`<option value="${n}" ${n===10?'selected':''}>${n}問</option>`).join('')}</select></div>
+      <div class="form-row"><label for="suEmail">メールアドレス（ログインに使います）</label><input type="email" id="suEmail" autocomplete="email" style="width:100%"></div>
+      <div class="form-row"><label for="suPw">パスワード（6文字以上）</label><input type="password" id="suPw" autocomplete="new-password" minlength="6" style="width:100%"></div>
+      <button class="btn btn-primary" type="submit">登録して始める</button>
+    </form>`:`
+    <form onsubmit="event.preventDefault();doLogin()" autocomplete="on">
+      <div class="form-row"><label for="liEmail">メールアドレス</label><input type="email" id="liEmail" autocomplete="username" style="width:100%"></div>
+      <div class="form-row"><label for="liPw">パスワード</label><input type="password" id="liPw" autocomplete="current-password" style="width:100%"></div>
+      <div class="row"><button class="btn btn-primary" type="submit">ログイン</button><button type="button" class="btn-link" onclick="doReset()">パスワードを忘れた</button></div>
+    </form>`}
+    <label class="row muted" style="gap:6px;cursor:pointer;margin-top:.9rem;font-size:13px"><input type="checkbox" id="keep" checked> ログインしたままにする（共用パソコンではチェックを外す）</label>
+    <div class="or"><span>または</span></div>
+    <button class="btn" style="width:100%" onclick="doGoogle()"><b style="color:#4285F4">G</b>　Google アカウントで${signup?'登録':'ログイン'}</button>
+    <p class="auth-msg" id="authMsg" role="alert"></p>
+  </div>
+  <div class="card">
+    <button class="btn-link" onclick="showLocal=true;render()">ログインせずに、この端末だけで使う</button>
+    <p class="hint" style="margin-top:.3rem">記録はこのブラウザにだけ保存されます。プライベートウィンドウや、終了時にデータを消す設定のブラウザ、再起動で元に戻る共用パソコンでは記録が消えます。${users.length?`（この端末の学習者：${users.length}人）`:''}</p>
+  </div>`;
+}
+function renderLocalWelcome(){
+  const has=users.length>0;
+  $('main').innerHTML=`
+  <div class="card welcome">
+    <div class="big">📚</div>
+    <h2 style="justify-content:center;font-size:17px">${CLOUD_ON?'この端末だけで使う':'ようこそ！'}</h2>
+    <p class="muted">学習者を登録すると、解答履歴・レベル・実績がこの端末に保存され、<br>忘れかけた問題を自動で出題する「間隔反復」で効率よく覚えられます。</p>
+    ${CLOUD_ON?'<p style="margin-top:.6rem"><button class="btn btn-sm btn-primary" onclick="showLocal=false;store.del(\'mode\');render()">← アカウントでログインする（おすすめ）</button></p>':''}
+  </div>
+  ${has?`<div class="card"><h2>👤 この端末の学習者</h2><div class="user-list">${users.map(u=>`
     <div class="user-item"><span class="av">${esc(u.avatar)}</span><span>${esc(u.name)}</span>
     <button class="btn btn-sm btn-primary spacer" onclick="switchUser('${u.id}')">この学習者で始める</button></div>`).join('')}</div></div>`:''}
   ${registerForm()}
@@ -503,6 +730,46 @@ function register(){
 }
 function switchUser(id){ loadUser(id); view='home'; render(); }
 
+function authMsg(t,ok){ const el=$('authMsg'); if(el){ el.textContent=t||''; el.classList.toggle('ok',!!ok); } }
+async function authBusy(fn){
+  const btns=[...$('main').querySelectorAll('button')]; btns.forEach(b=>b.disabled=true); authMsg('');
+  try{ await fn(); }
+  catch(e){ authMsg(authErr(e)); }
+  finally{ btns.forEach(b=>{ if(document.body.contains(b)) b.disabled=false; }); }
+}
+async function setKeep(){
+  const k=$('keep')?$('keep').checked:true;
+  await cloud.auth.setPersistence(k?firebase.auth.Auth.Persistence.LOCAL:firebase.auth.Auth.Persistence.SESSION);
+}
+function doLogin(){ authBusy(async()=>{
+  const email=$('liEmail').value.trim(), pw=$('liPw').value;
+  if(!email||!pw) throw {code:'x/empty'};
+  await setKeep(); await cloud.auth.signInWithEmailAndPassword(email,pw);
+}); }
+function doSignup(){ authBusy(async()=>{
+  const name=$('regName').value.trim(), email=$('suEmail').value.trim(), pw=$('suPw').value;
+  if(!name) throw {code:'x/name'};
+  if(!email||!pw) throw {code:'x/empty'};
+  cloud.pendingProfile={name,avatar:regAvatar,goal:+$('regGoal').value};
+  try{ await setKeep(); await cloud.auth.createUserWithEmailAndPassword(email,pw); }
+  catch(e){ cloud.pendingProfile=null; throw e; }
+}); }
+function doGoogle(){ authBusy(async()=>{
+  if(authTab==='signup'&&$('regName')&&$('regName').value.trim())
+    cloud.pendingProfile={name:$('regName').value.trim(),avatar:regAvatar,goal:+$('regGoal').value};
+  try{
+    await setKeep();
+    const p=new firebase.auth.GoogleAuthProvider(); p.setCustomParameters({prompt:'select_account'});
+    await cloud.auth.signInWithPopup(p);
+  }catch(e){ cloud.pendingProfile=null; throw e; }
+}); }
+function doReset(){ authBusy(async()=>{
+  const email=$('liEmail').value.trim();
+  if(!email) throw {code:'auth/missing-email'};
+  await cloud.auth.sendPasswordResetEmail(email);
+  authMsg('パスワード再設定用のメールを送りました。届かない場合は迷惑メールフォルダも確認してください。',true);
+}); }
+
 /* ----- ホーム ----- */
 function renderHome(){
   const due=dueList().length, unseen=DATA.length-seenCount();
@@ -510,6 +777,7 @@ function renderHome(){
   const fmt=U.settings.format, td=todayStat();
   const counts=masteryCounts(DATA);
   $('main').innerHTML=`
+  ${mode==='local'&&CLOUD_ON?`<p class="notice" style="margin-bottom:1rem">⚠ 記録はこのブラウザにだけ保存されています。<button class="btn-link" onclick="go('profile')">アカウントを作ってクラウドに保存する →</button></p>`:''}
   <div class="format-switch" role="tablist" aria-label="解答形式">
     <button class="${fmt==='choice'?'active':''}" onclick="setFormat('choice')">▤ 選択式</button>
     <button class="${fmt==='fill'?'active':''}" onclick="setFormat('fill')">✎ 穴埋め式（XP×1.5）</button>
@@ -847,7 +1115,7 @@ function renderBadges(){
 
 /* ----- プロフィール・設定 ----- */
 function renderProfile(){
-  const u=me();
+  const u=me(), cl=mode==='cloud';
   $('main').innerHTML=`
   <div class="card"><h2>${esc(u.avatar)} ${esc(u.name)} さんの設定</h2>
     <div class="form-row"><label for="pName">ニックネーム</label><input type="text" id="pName" maxlength="20" value="${esc(u.name)}" style="width:100%"></div>
@@ -855,27 +1123,62 @@ function renderProfile(){
     <div class="form-row"><label for="pGoal">1日の目標問題数</label><select id="pGoal">${[5,10,15,20,30,50].map(n=>`<option value="${n}" ${n===U.settings.goal?'selected':''}>${n}問</option>`).join('')}</select></div>
     <div class="form-row"><label class="row" style="gap:6px;cursor:pointer;color:var(--text)"><input type="checkbox" id="pSound" ${U.settings.sound?'checked':''}> 効果音を鳴らす</label></div>
     <button class="btn btn-primary" onclick="saveProfile()">保存</button></div>
+  ${cl?`<div class="card"><h2>☁️ アカウント</h2>
+    <p class="muted">ログイン中：${esc(u.email||'（Google アカウント）')}</p>
+    <p style="margin:.4rem 0 .8rem" id="syncText">${esc(syncLabel())}</p>
+    <div class="row"><button class="btn" onclick="cloudPush()">今すぐ保存</button><button class="btn" onclick="logout()">ログアウト</button></div>
+    <p class="hint" style="margin-top:.6rem">記録は解答のたびに自動でクラウドに保存されます。別の端末でも同じメールアドレス（または Google アカウント）でログインすれば続きから学習できます。</p></div>`
+  :`${CLOUD_ON?`<div class="card" style="border-color:var(--green-border)"><h2>☁️ アカウントを作ってクラウドに保存（おすすめ）</h2>
+    <p class="muted" style="margin-bottom:.75rem">いまの記録はこのブラウザにだけ保存されています。アカウントを作ると、この記録を引き継いでクラウドに保存し、再起動後や別の端末からもログインして続けられます。</p>
+    <button class="btn btn-primary" onclick="toCloud()">アカウントを作って引き継ぐ</button></div>`:''}
   <div class="card"><h2>👥 学習者の切り替え</h2>
     <div class="user-list">${users.map(x=>`<div class="user-item ${x.id===uid?'cur':''}"><span class="av">${esc(x.avatar)}</span><span>${esc(x.name)}</span>
       <span class="hint">登録 ${esc(x.created||'')}</span>${x.id===uid?'<span class="spacer pill master">使用中</span>':`<button class="btn btn-sm spacer" onclick="switchUser('${x.id}')">切り替え</button>`}</div>`).join('')}</div>
-    <div class="row" style="margin-top:.75rem"><button class="btn" onclick="logout()">＋ 別の学習者を登録</button></div></div>
+    <div class="row" style="margin-top:.75rem"><button class="btn" onclick="logout()">＋ 別の学習者を登録</button></div></div>`}
   <div class="card"><h2>💾 データの書き出し・読み込み</h2>
-    <p class="muted" style="margin-bottom:.75rem">学習記録はこの端末のブラウザ内だけに保存されています。機種変更・別のブラウザで続けるときや、ブラウザのデータ削除に備えて、ファイルに書き出して保管してください。</p>
+    <p class="muted" style="margin-bottom:.75rem">${cl?'念のためのバックアップとして、記録をファイルに書き出して保管できます。':'学習記録はこの端末のブラウザ内だけに保存されています。機種変更・別のブラウザで続けるときや、ブラウザのデータ削除に備えて、ファイルに書き出して保管してください。'}</p>
     <div class="row"><button class="btn" onclick="exportData()">⬇ 書き出す（JSON）</button>
       <label class="btn" style="cursor:pointer">⬆ 読み込む<input type="file" accept="application/json,.json" class="hidden" onchange="importData(this)"></label></div>
-    <p class="notice" style="margin-top:.9rem">⚠ これは端末内の簡易プロフィールで、パスワード保護はありません。共用PCでは個人情報をニックネームに入れないでください。</p></div>
+    ${cl?'':'<p class="notice" style="margin-top:.9rem">⚠ これは端末内の簡易プロフィールで、パスワード保護はありません。共用PCでは個人情報をニックネームに入れないでください。</p>'}</div>
   <div class="card"><h2>🗑️ リセット</h2>
-    <div class="row"><button class="btn btn-danger" onclick="resetProgress()">学習記録をリセット</button><button class="btn btn-danger" onclick="deleteUser()">この学習者を削除</button></div></div>`;
+    <div class="row"><button class="btn btn-danger" onclick="resetProgress()">学習記録をリセット</button><button class="btn btn-danger" onclick="deleteUser()">${cl?'アカウントを削除':'この学習者を削除'}</button></div></div>`;
   regAvatar=u.avatar;
 }
 function saveProfile(){
   const u=me(); const n=$('pName').value.trim(); if(n)u.name=n; u.avatar=regAvatar;
   U.settings.goal=+$('pGoal').value; U.settings.sound=$('pSound').checked;
-  store.set('users',users); save(); toast('✅','保存しました',''); render();
+  if(mode==='local') store.set('users',users);
+  save(); toast('✅','保存しました',''); render();
 }
-function logout(){ uid=null; U=null; store.del('current'); view='home'; render(); }
+function toCloud(){
+  store.set('migrateFrom',uid); store.del('mode');
+  mode=null; uid=null; U=null; S=null; showLocal=false; authTab='signup'; view='home'; render();
+}
+async function logout(){
+  if(mode!=='cloud'){ uid=null; U=null; mode=null; store.del('current'); view='home'; render(); return; }
+  await cloudFlush();
+  const c=store.get('c.'+uid,null);
+  if(c&&c.dirty&&!confirm('まだクラウドに送れていない記録があります。\nこの端末に控えがあるので次回ログイン時に送信されますが、共用パソコンなどでは失われる可能性があります。\nログアウトしますか？')) return;
+  if(c&&!c.dirty) store.del('c.'+uid);   // 送信済みなら、この端末の控えは消す（共用パソコン対策）
+  clearCloudState(); render();
+  await cloud.auth.signOut();
+}
 function resetProgress(){ if(!confirm('学習記録・XP・実績をすべて消去します。よろしいですか？'))return; const s=U.settings; U=newUserData(); U.settings=s; save(); toast('🔄','リセットしました',''); go('home'); }
-function deleteUser(){
+async function deleteUser(){
+  if(mode==='cloud'){
+    const user=cloud.auth.currentUser;
+    if(Date.now()-Date.parse(user.metadata.lastSignInTime)>4*60*1000){
+      toast('🔒','もう一度ログインしてください','安全のため、ログアウト→再ログインの直後に削除してください'); return;
+    }
+    if(!confirm('アカウントと学習記録をすべて削除します。元に戻せません。よろしいですか？'))return;
+    try{
+      clearTimeout(cloud.timer); cloud.timer=null;
+      await cloud.db.collection('users').doc(uid).delete();
+      store.del('c.'+uid); clearCloudState();
+      await user.delete(); toast('🗑️','アカウントを削除しました',''); render();
+    }catch(e){ toast('⚠','削除できませんでした',e.code&&e.code.startsWith('auth/')?authErr(e):dbErr(e)); }
+    return;
+  }
   if(!confirm(`学習者「${me().name}」と記録を削除します。元に戻せません。よろしいですか？`))return;
   store.del('u.'+uid); users=users.filter(x=>x.id!==uid); store.set('users',users); logout();
 }
@@ -888,6 +1191,10 @@ function importData(inp){
   const r=new FileReader();
   r.onload=()=>{try{
     const j=JSON.parse(r.result); if(j.app!=='kokugo-drill'||!j.data||typeof j.data!=='object'||!j.user)throw new Error('format');
+    if(mode==='cloud'){
+      if(!confirm('読み込んだ記録で、このアカウントの記録を上書きします。よろしいですか？'))return;
+      U=normalizeData(j.data); save(); toast('✅','読み込みました','記録を復元し、クラウドに保存しています'); go('home'); return;
+    }
     if(!/^[a-z0-9]{4,40}$/i.test(String(j.user.id))) j.user.id='u'+Date.now().toString(36);
     if(!AVATARS.includes(j.user.avatar)) j.user.avatar='📚';
     const exists=users.find(x=>x.id===j.user.id);
@@ -911,8 +1218,14 @@ document.addEventListener('keydown',e=>{
 });
 
 /* ================= 起動 ================= */
-if(uid&&users.some(x=>x.id===uid)) loadUser(uid); else uid=null;
-render();
+{
+  const cur=store.get('current',null), valid=cur&&users.some(x=>x.id===cur);
+  // クラウド未設定のとき、または前回「この端末だけで使う」を選んでいたときは、端末内の記録で開始
+  if(valid&&(!CLOUD_ON||store.get('mode',null)==='local')){ loadUser(cur); showLocal=true; }
+  else if(!CLOUD_ON) showLocal=true;
+  if(CLOUD_ON){ if(!U) booting=true; initCloud(); }
+  render();
+}
 </script>
 </body>
 </html>
